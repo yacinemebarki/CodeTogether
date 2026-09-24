@@ -98,7 +98,7 @@ h6{
 .joinBtn:active, .createBtn:active{
     transform: translateY(4px);
 }
-.code-field, .code-created{
+.code-field, .name-field,.code-created{
     border-radius: 2px;
     background-color: #0b0f17;
     height: 65px;
