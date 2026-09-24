@@ -26,9 +26,10 @@ header{
 }
 .main{
     display: flex;
-    gap: 10px;
+    gap: 20px;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
 }
 .main-intro{
     display: flex;
@@ -36,13 +37,70 @@ header{
     align-items: center;
     justify-content: center;
     gap: 5px;
-    margin: 50px;
+    margin-top: 80px;
 }
-.title{
-    font-size: 24px;
+.main-title{
+    font-size: 50px;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
 .description{
-    font-size: 20px;
-    width: 800px;
+    font-size: 18px;
+    width: 700px;
     text-align: center;
+}
+.field{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+}
+.create-field, .join-field{
+    border-radius: 4px;
+    background-color: #2C3039;
+    height: 350px;
+    width: 500px;
+    display: flex;
+    flex-direction: column;
+    padding: 30px 20px;
+    gap: 30px;
+}
+.field-title{
+    display: flex;
+    flex-direction: row;
+    gap: 7px;
+    font-size: 20px;
+}
+h6{
+    height: 30px;
+}
+.createBtn, .joinBtn{
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 65px;
+    transition: transform 0.3s ease;
+}
+.createBtn{
+    background-color: #8083FF;
+    color: #2F2EBE;
+}
+.joinBtn{
+    background-color: #1ABBD9;
+    color: #003640;
+}
+.createBtn:hover{
+    background-color: #A0A3FF;
+}
+.joinBtn:hover{
+    background-color: #4CD7F6;
+}
+.joinBtn:active, .createBtn:active{
+    transform: translateY(4px);
+}
+.code-field, .code-created{
+    border-radius: 2px;
+    background-color: #0b0f17;
+    height: 65px;
+    padding: 5px 10px;
 }
