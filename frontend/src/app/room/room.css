@@ -51,9 +51,67 @@ header{
 }
 .member-bar, .coding-bar, .problem-bar{
     background-color: #2C3039;
-    padding: 10px 10px;
+    padding: 0px 10px;
     display: flex;
     flex-direction: row;
+    height: 50px;
+    align-items: stretch;
+}
+
+.member-bar {
+    padding: 0 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
     gap: 30px;
     height: 50px;
 }
+
+.problem-bar{
+    gap: 5px;
+}
+
+
+.language-select {
+    background-color: #2C3039;
+    color: #929395;
+    border: 1px solid #444;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 13px;
+    height: 35px;
+    margin-top: 10px;
+}
+
+.DesBtn, .ListBtn{
+    cursor: pointer;
+}
+
+.DesBtn.active, .ListBtn.active{
+    background-color: #0b0f17;
+    color: #8083FF;
+    height: 50px;
+    width: 100px;
+}
+
+.ChatBtn, .MemberBtn {
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    width: 70px;
+    height: 30px;
+    border-radius: 2px;
+    padding: 0;
+    background-color: transparent;
+    color: white;
+}
+
+.ChatBtn.active, .MemberBtn.active{
+    background-color: #C3C6D2;
+}
+
+

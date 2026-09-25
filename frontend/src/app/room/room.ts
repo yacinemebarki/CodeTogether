@@ -12,7 +12,9 @@ export class Room {
   time: number = 0;
   code = 'abcdeft';
   isClicked = false;
-  selectedLanguage = '';
+  selectedLanguage = 'cpp';
+  ActiveProblemTab = 'problems';
+  MemberTab = 'Chat';
 
   constructor(private cdr: ChangeDetectorRef) {}
 
@@ -28,18 +30,22 @@ export class Room {
   }
 
   ShowProblem(){
-
+    this.ActiveProblemTab = "description";
+    this.cdr.markForCheck();
   }
 
   ShowList(){
-
+    this.ActiveProblemTab = "problems";
+    this.cdr.markForCheck();
   }
 
   ToChat(){
-
+    this.MemberTab = "Chat";
+    this.cdr.markForCheck();
   }
 
   ToMember(){
-
+    this.MemberTab = "Member";
+    this.cdr.markForCheck();
   }
 }
