@@ -1,8 +1,3 @@
-body{
-    background-color: #0b0f17;
-    color: white;
-}
-
 header{
     display: flex;
     flex-direction: row;
@@ -36,6 +31,7 @@ header{
     height: 30px;
     margin-left: 1150px;
     transition: transform 0.3s ease;
+    transform: translateY(0);
 }
 .CodeBtn h1{
     color: #929395;
@@ -45,4 +41,19 @@ header{
 }
 .CodeBtn:hover{
     background-color: #606062;
+}
+.CodeBtn.clicked {
+    transform: translateY(4px);
+}
+.main{
+    display: grid;
+    grid-template-columns: 30% 50% 20%;
+}
+.member-bar, .coding-bar, .problem-bar{
+    background-color: #2C3039;
+    padding: 10px 10px;
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    height: 50px;
 }
