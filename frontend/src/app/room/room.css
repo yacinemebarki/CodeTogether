@@ -1,0 +1,48 @@
+body{
+    background-color: #0b0f17;
+    color: white;
+}
+
+header{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    background-color: black;
+    padding: 7px;
+}
+.intro{
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    margin-left: 10px;
+    margin-top: 5px;
+}
+.stats{
+    margin-top: 5px;
+    background-color: #2C3039;
+    border-radius: 8px;   
+    padding: 2px 5px;
+    font-size: 13px;
+}
+.CodeBtn{
+    display: flex;
+    gap: 5px;
+    font-size: 15px;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    background-color: #2C3039;
+    padding: 10px 5px;
+    height: 30px;
+    margin-left: 1150px;
+    transition: transform 0.3s ease;
+}
+.CodeBtn h1{
+    color: #929395;
+}
+.CodeBtn h2{
+    color: #4CD7F6;
+}
+.CodeBtn:hover{
+    background-color: #606062;
+}

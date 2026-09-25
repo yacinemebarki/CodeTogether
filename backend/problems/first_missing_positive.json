@@ -1,0 +1,33 @@
+{
+  "id": 2,
+  "title": "First Missing Positive",
+  "category": "arrays",
+  "difficulty": "medium",
+  "description": "Given an array of integers, find the smallest positive integer that does not appear in the array.",
+  "constraints": [
+    "1 <= n <= 100000",
+    "-1000000000 <= arr[i] <= 1000000000"
+  ],
+  "input": {
+    "type": "array",
+    "description": "An array of integers."
+  },
+  "output": {
+    "type": "integer",
+    "description": "The smallest positive integer that does not appear in the array."
+  },
+  "test_cases": [
+    {
+      "input": [3, 4, -1, 1],
+      "expected_output": 2
+    },
+    {
+      "input": [1, 2, 0],
+      "expected_output": 3
+    },
+    {
+      "input": [7, 8, 9, 11, 12],
+      "expected_output": 1
+    }
+  ]
+}
