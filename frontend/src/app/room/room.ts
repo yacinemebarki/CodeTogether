@@ -4,10 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { Problem, TestCase } from '../interfaces/Problem';
 import { HttpClient } from '@angular/common/http';
 import { API_BASE } from '../config';
+import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-room',
-  imports: [FormsModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './room.html',
   styleUrl: './room.css',
 })

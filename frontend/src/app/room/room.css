@@ -49,6 +49,9 @@ header{
     display: grid;
     grid-template-columns: 30% 50% 20%;
 }
+.problem-panel {
+    border-right: 2px solid black;
+}
 .member-bar, .coding-bar, .problem-bar{
     background-color: #2C3039;
     padding: 0px 10px;
@@ -112,6 +115,44 @@ header{
 
 .ChatBtn.active, .MemberBtn.active{
     background-color: #C3C6D2;
+}
+
+.problem{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px 10px;
+}
+.problem-info{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.problem-header{
+    display: flex;
+    flex-direction: row;
+}
+.easy {
+    color: #16a34a;
+    background-color: #dcfce7;
+}
+
+.medium {
+    color: #ca8a04;
+    background-color: #fef9c3;
+}
+
+.hard {
+    color: #dc2626;
+    background-color: #fee2e2;
+}
+
+.hard, .medium, .easy{
+    border-radius: 8px;
+    margin-left: 180px;
+    width: 80px;
+    height: 30px;
+    padding: 3px 10px;
 }
 
 

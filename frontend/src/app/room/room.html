@@ -22,8 +22,29 @@
             <button class="DesBtn" [class.active]="ActiveProblemTab === 'description'" (click)="ShowProblem()">description</button>
             <button class="ListBtn" [class.active]="ActiveProblemTab === 'problems'" (click)="ShowList()">problems</button>
         </div>
-        <div class="problem-description">
-            <h
+        <div class="problem" *ngIf="SelectedProblem">
+            <div class="problem-info">
+                <div class="problem-header">
+                    <h1>{{ SelectedProblem?.id }}.</h1>
+                    <h1>{{ SelectedProblem?.title }}</h1>
+                    <h6 [class]="SelectedProblem?.difficulty?.toLowerCase()">{{ SelectedProblem?.difficulty }}</h6>
+                </div>
+                <h6>{{ SelectedProblem?.category }}</h6>
+            </div>
+            <p class="problem-decription">{{ SelectedProblem.description }}</p>
+            <div class="examples">
+                <div class="example" *ngFor="let testCase of SelectedProblem.test_cases; let i = index">
+                    <h3>Example {{ i + 1 }}</h3>
+                    <div class="example-row">
+                        <strong>Input: </strong>
+                        <span>{{ testCase.input }}</span>
+                    </div>
+                    <div class="example-row">
+                        <strong>Output: </strong>
+                        <span>{{ testCase.expected_output }}</span>
+                    </div>
+                </div>
+            </div>    
         </div>
     </div>
     <div class="coding-panel">
