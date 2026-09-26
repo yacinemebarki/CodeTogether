@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import { ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Problem, TestCase } from '../interfaces/Problem';
+import { HttpClient } from '@angular/common/http';
+import { API_BASE } from '../config';
 
 @Component({
   selector: 'app-room',
@@ -15,9 +18,17 @@ export class Room {
   selectedLanguage = 'cpp';
   ActiveProblemTab = 'problems';
   MemberTab = 'Chat';
+  problems: Problem[] = [];
+  SelectedProblem: Problem | null = null;
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(private cdr: ChangeDetectorRef, private http: HttpClient) {}
 
+  ngOnInit(){
+    this.http.get<Problem[]>(`${API_BASE}/api/problems`).subscribe(ProblemData => {
+      this.problems = ProblemData;
+      this.SelectedProblem = this.problems[0];
+    })
+  }
 
   copie(){
     navigator.clipboard.writeText(this.code);
