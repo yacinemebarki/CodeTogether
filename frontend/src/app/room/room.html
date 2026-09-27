@@ -29,22 +29,28 @@
                     <h1>{{ SelectedProblem?.title }}</h1>
                     <h6 [class]="SelectedProblem?.difficulty?.toLowerCase()">{{ SelectedProblem?.difficulty }}</h6>
                 </div>
-                <h6>{{ SelectedProblem?.category }}</h6>
+                <h6 class="problem-category">{{ SelectedProblem?.category }}</h6>
             </div>
             <p class="problem-decription">{{ SelectedProblem.description }}</p>
             <div class="examples">
                 <div class="example" *ngFor="let testCase of SelectedProblem.test_cases; let i = index">
                     <h3>Example {{ i + 1 }}</h3>
-                    <div class="example-row">
-                        <strong>Input: </strong>
-                        <span>{{ testCase.input }}</span>
-                    </div>
-                    <div class="example-row">
-                        <strong>Output: </strong>
-                        <span>{{ testCase.expected_output }}</span>
+                    <div class="example-content">
+                        <div class="example-row">
+                            <strong>Input: </strong>
+                            <span>{{ testCase.input | json }}</span>
+                        </div>
+                        <div class="example-row">
+                            <strong>Output: </strong>
+                            <span class="text-[#00A878] font-semibold">{{ testCase.expected_output }}</span>
+                        </div>
                     </div>
                 </div>
-            </div>    
+            </div>  
+            <div class="constraints">
+                <h1>Constraints </h1>
+                <h4>{{ SelectedProblem.constraints }}</h4>
+            </div>
         </div>
     </div>
     <div class="coding-panel">
