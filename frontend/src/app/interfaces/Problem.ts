@@ -1,6 +1,7 @@
 export interface TestCase {
     input: unknown;
     expected_output: unknown;
+    success: string;
 }
 
 export interface Problem {

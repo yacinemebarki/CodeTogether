@@ -15,7 +15,7 @@ import { response } from 'express';
 export class LandingPage {
   stats: number = 0;
   user_name = '';
-  code = '';
+  key = '';
 
   constructor(private http: HttpClient, private route: Router){}
 
@@ -34,7 +34,7 @@ export class LandingPage {
         alert(response.message);
         return;
       }
-      (document.getElementById('code-created') as HTMLInputElement).value = response.code;
+      (document.getElementById('code-created') as HTMLInputElement).value = response.key;
     })
   }
   
@@ -43,8 +43,8 @@ export class LandingPage {
       alert("you should enter a user name");
       return;
     }
-    if(this.code == ''){
-      alert("you should pase a code");
+    if(this.key == ''){
+      alert("you should paste a key");
       return;
     }
   }

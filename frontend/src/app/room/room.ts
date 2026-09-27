@@ -5,6 +5,7 @@ import { Problem, TestCase } from '../interfaces/Problem';
 import { HttpClient } from '@angular/common/http';
 import { API_BASE } from '../config';
 import { CommonModule } from '@angular/common';
+import { TestStats } from '../interfaces/TestStats';
 
 
 @Component({
@@ -15,50 +16,61 @@ import { CommonModule } from '@angular/common';
 })
 export class Room {
   time: number = 0;
-  code = 'abcdeft';
+  key = 'abcdeft';
   isClicked = false;
   selectedLanguage = 'cpp';
   ActiveProblemTab = 'problems';
   MemberTab = 'Chat';
   problems: Problem[] = [];
   SelectedProblem: Problem | null = null;
+  code = '';
+  RunMessage = '2/3 passed'
+  stats: TestStats = {RunTime: 0, memory: 0};
 
-  constructor(private cdr: ChangeDetectorRef, private http: HttpClient) {}
+  constructor(private cdr: ChangeDetectorRef, private http: HttpClient) { }
 
-  ngOnInit(){
+  ngOnInit() {
     this.http.get<Problem[]>(`${API_BASE}/api/problems`).subscribe(ProblemData => {
       this.problems = ProblemData;
       this.SelectedProblem = this.problems[0];
     })
   }
 
-  copie(){
-    navigator.clipboard.writeText(this.code);
+  copie() {
+    navigator.clipboard.writeText(this.key);
     this.isClicked = true;
 
     setTimeout(() => {
-        this.isClicked = false;
-        this.cdr.markForCheck();
+      this.isClicked = false;
+      this.cdr.markForCheck();
     }, 300);
   }
 
-  ShowProblem(){
+  ShowProblem() {
     this.ActiveProblemTab = "description";
     this.cdr.markForCheck();
   }
 
-  ShowList(){
+  ShowList() {
     this.ActiveProblemTab = "problems";
     this.cdr.markForCheck();
   }
 
-  ToChat(){
+  ToChat() {
     this.MemberTab = "Chat";
     this.cdr.markForCheck();
   }
 
-  ToMember(){
+  ToMember() {
     this.MemberTab = "Member";
     this.cdr.markForCheck();
+  }
+
+  RunCode(){
+
+  }
+
+  SubmitCode(){
+
   }
 }
