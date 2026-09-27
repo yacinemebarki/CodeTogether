@@ -52,6 +52,12 @@
                 <h4>{{ SelectedProblem.constraints }}</h4>
             </div>
         </div>
+        <div class="problem-list" *ngIf="ActiveProblemTab === 'problems'">
+            <div class="problem-item" *ngFor="let problem of problems">
+                <h1>{{ problem.id }}. {{ problem.title }}</h1>
+                <h4 class="problem-difficulty-{{ problem.difficulty }}">{{ problem.difficulty }}</h4>
+            </div>
+        </div>
     </div>
     <div class="coding-panel">
         <div class="coding-bar">
@@ -109,7 +115,7 @@
                     <div *ngFor="let test of SelectedProblem?.test_cases; let i = index" class="test-case-title test-case-title-{{ i + 1 }}">
                         <h1>Test {{ i + 1 }}</h1>
 
-                        <div class="test-result" *ngIf="test.user_output === undefined">
+                        <div class="test-result-case" *ngIf="test.user_output === undefined">
                             <h5 class="expected">
                                 Expected output: {{ test.expected_output }}
                             </h5>

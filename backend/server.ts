@@ -23,6 +23,7 @@ app.get("/", (req, res) =>{
 const problems: any[] = [];
 
 function LoadProblems(){
+    problems.length = 0;
     const ProblemDir = path.join(__dirname, "problems");
     const files = fs.readdirSync(ProblemDir);
 
