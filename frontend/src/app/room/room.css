@@ -321,6 +321,7 @@ header{
     display: flex;
     flex-direction: row;
     background-color: #444;
+    transition: all 0.3s ease;
 }
 .problem-difficulty-easy {
     color: #16a34a;
@@ -347,4 +348,11 @@ header{
     border-radius: 8px;
     width: 80px;
     height: 30px;
+}
+
+.problem-item:hover{
+    transform: translateY(-4px);
+}
+.problem-item:active{
+    transform: translateY(-4px);
 }

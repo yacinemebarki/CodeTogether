@@ -53,7 +53,7 @@
             </div>
         </div>
         <div class="problem-list" *ngIf="ActiveProblemTab === 'problems'">
-            <div class="problem-item" *ngFor="let problem of problems">
+            <div class="problem-item" *ngFor="let problem of problems" (click)="SelectProblem(problem)">
                 <h1>{{ problem.id }}. {{ problem.title }}</h1>
                 <h4 class="problem-difficulty-{{ problem.difficulty }}">{{ problem.difficulty }}</h4>
             </div>

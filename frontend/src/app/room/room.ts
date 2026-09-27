@@ -56,6 +56,12 @@ export class Room {
     this.cdr.markForCheck();
   }
 
+  SelectProblem(problem: Problem){
+    this.SelectedProblem = problem;
+    this.ActiveProblemTab = "description";
+    this.cdr.markForCheck();
+  }
+
   ToChat() {
     this.MemberTab = "Chat";
     this.cdr.markForCheck();
