@@ -1,0 +1,6 @@
+export interface User{
+    name: string;
+    role: string;
+    color: string;
+    mute: boolean;
+}
