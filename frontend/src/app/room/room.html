@@ -16,7 +16,7 @@
         </svg>
     </button>
 </header>  
-<div class="main">
+<div class="main" (click)="CloseSettings()">
     <div class="problem-panel">
         <div class="problem-bar">
             <button class="DesBtn" [class.active]="ActiveProblemTab === 'description'" (click)="ShowProblem()">description</button>
@@ -177,7 +177,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="m4 4 16 16"/>
                         </svg>
                     </button>    
-                    <button class="setting-btn" *ngIf="current_user.role === 'owner' && member.role != 'owner'" (click)="ShowSettings(member)">
+                    <button class="setting-btn" *ngIf="current_user.role === 'owner' && member.role != 'owner'" (click)="ShowSettings(member); $event.stopPropagation()">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
                         </svg>
@@ -188,7 +188,7 @@
 
                 <button (click)="KickMember(selectedMember)">Kick</button>
                 <button (click)="MuteMember(selectedMember)">Mute</button>
-                <button (click)="showRoles = !showRoles">Change role</button>
+                <button (click)="showRoles = !showRoles; $event.stopPropagation()">Change role</button>
                 <div class="role-options" *ngIf="showRoles">
                     <button (click)="ChangeRole(selectedMember, 'viewer')">Viewer</button>
                     <button (click)="ChangeRole(selectedMember, 'editor')">Editor</button>

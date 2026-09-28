@@ -190,4 +190,9 @@ export class Room {
 
   }
 
+  CloseSettings(){
+    this.selectedMember = null;
+    this.showRoles = false;
+  }
+
 }
