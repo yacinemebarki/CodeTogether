@@ -3,4 +3,5 @@ export interface User{
     role: string;
     color: string;
     mute: boolean;
+    mutedByOwner: boolean;
 }

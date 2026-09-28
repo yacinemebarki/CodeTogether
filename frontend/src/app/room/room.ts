@@ -1,3 +1,4 @@
+import { Message } from './../interfaces/Message';
 import { Component } from '@angular/core';
 import { ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -7,7 +8,7 @@ import { API_BASE } from '../config';
 import { CommonModule } from '@angular/common';
 import { TestStats } from '../interfaces/TestStats';
 import { User } from '../interfaces/User';
-import { Message } from '../interfaces/Message';
+import { CreateResponse } from '../interfaces/CreateResponse';
 
 
 @Component({
@@ -18,7 +19,7 @@ import { Message } from '../interfaces/Message';
 })
 export class Room {
   time: number = 0;
-  key = 'abcdeft';
+  key = '';
   isClicked = false;
   selectedLanguage = 'cpp';
   ActiveProblemTab = 'problems';
@@ -28,88 +29,13 @@ export class Room {
   code = '';
   RunMessage = '2/3 passed'
   stats: TestStats = {RunTime: 0, memory: 0};
-  current_user: User = { name: 'Yacine', role: 'owner', color: '#818CF8', mute: false};
+  current_user: User = { name: '', role: '', color: '', mute: false, mutedByOwner: false};
   selectedMember: User | null = null;
   showRoles = false;
 
-  users: User[] = [
-    {
-        name: "Yacine",
-        role: "owner",
-        color: "#818CF8",
-        mute: false
-    },
-    {
-        name: "Ahmed",
-        role: "editor",
-        color: "#4ADE80",
-        mute: true
-    },
-    {
-        name: "Sara",
-        role: "viewer",
-        color: "#FBBF24",
-        mute: false
-    }
-];
+  users: User[] = [];
 
   messages: Message[] = [];
-  test_messages: Message[] = [
-    {
-        message: "Hey everyone!",
-        user: {
-            name: "Yacine",
-            color: "#818CF8",
-            role: "editor",
-            mute: true
-        }
-    },
-    {
-        message: "Hello! I'm joining the room now.",
-        user: {
-            name: "Ahmed",
-            color: "#4ADE80",
-            role: "viewer",
-            mute: false
-        }
-    },
-    {
-        message: "Which problem are we solving?",
-        user: {
-            name: "Sara",
-            color: "#FBBF24",
-            role: "owner",
-            mute: false
-        }
-    },
-    {
-        message: "Let's try First Missing Positive.",
-        user: {
-            name: "Yacine",
-            color: "#818CF8",
-            role: "editor",
-            mute: true
-        }
-    },
-    {
-        message: "Sounds good 👍",
-        user: {
-            name: "Mohamed",
-            color: "#F87171",
-            role: "owner",
-            mute: true
-        }
-    },
-    {
-        message: "I think we should first discuss the O(n) solution.",
-        user: {
-            name: "Sara",
-            color: "#FBBF24",
-            role: "owner",
-            mute: false
-        }
-    }
-];
   constructor(private cdr: ChangeDetectorRef, private http: HttpClient) { }
 
   ngOnInit() {
@@ -164,7 +90,17 @@ export class Room {
   }
 
   SentMessage(){
+    const input = document.querySelector('.message-field') as HTMLInputElement;
+    const text = input.value;
 
+    const message: Message = {message: text, user: this.current_user};
+    input.value = '';
+
+    this.http.post<CreateResponse>(`${API_BASE}/api/message_sent`, message).subscribe({ next: response => {
+      if(!response.success){
+        console.log(response.message);
+      }
+    }}) 
   }
 
   toggleMute(user: User) {
@@ -187,7 +123,7 @@ export class Room {
   }
 
   ChangeRole(SelectedMember: User, role: string){
-
+    SelectedMember.role = role;
   }
 
   CloseSettings(){

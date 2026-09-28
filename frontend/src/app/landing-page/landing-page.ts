@@ -34,7 +34,6 @@ export class LandingPage {
         alert(response.message);
         return;
       }
-      (document.getElementById('code-created') as HTMLInputElement).value = response.key;
     })
   }
   
@@ -47,6 +46,15 @@ export class LandingPage {
       alert("you should paste a key");
       return;
     }
+    const JoinData = {
+      user_name: this.user_name,
+      key: this.key
+    }
+    this.http.post<CreateResponse>(`${API_BASE}/api/joinRoom`, JoinData).subscribe(response => {
+      if(!response.success){
+        alert(response.message);
+      }
+    })
   }
   
 }
