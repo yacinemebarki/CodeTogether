@@ -4,5 +4,5 @@ import { LandingPage } from './landing-page/landing-page';
 
 export const routes: Routes = [
     {path: '', component: LandingPage},
-    {path: 'room', component: Room}
+    {path: 'Room', component: Room}
 ];

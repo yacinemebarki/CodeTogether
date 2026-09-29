@@ -1,4 +1,3 @@
-import { API_BASE } from './../frontend/src/app/config';
 import express from "express";
 import cors from 'cors';
 import path from 'path';
@@ -41,7 +40,7 @@ function LoadProblems(){
     }
 }
 
-app.get(`${API_BASE}/api/problems`,(req, res) => {
+app.get("/api/problems",(req, res) => {
     LoadProblems();
     res.json(problems);
 })
@@ -65,7 +64,7 @@ function generateRandomColor(): string {
 
 const rooms = new Map<string, Room>();
 
-app.get(`${API_BASE}/api/createRoom`, (req, res) => {
+app.post("/api/createRoom", (req, res) => {
     const { user_name } = req.body;
 
     let key = '';
@@ -79,10 +78,56 @@ app.get(`${API_BASE}/api/createRoom`, (req, res) => {
     const users: User[] = [];
     users.push(user);
 
-    rooms.set(key, {
+    const room: Room = {
         key: key,
         owner: user,
         users: users
+    };
+
+
+    rooms.set(key, room);
+
+    res.json({
+        success: true,
+        room: room,
+        current_user: user
+    });
+
+})
+
+app.post("/api/joinRoom", (req, res) => {
+    const { user_name, key } = req.body;
+
+    if(!rooms.has(key)){
+        res.json({
+            success: false,
+            message: "room with that code dosnt exist"
+        })
+    }
+
+    const room = rooms.get(key);
+    const UserExist = room?.users.some( user => user.name === user_name);
+
+    if(UserExist){
+        res.json({
+            success: false,
+            message: "exist a user with that user name"
+        })
+    }
+
+    let color: string;
+    do {
+        color = generateRandomColor();
+    } while (room?.users.some(user => user.color === color));
+
+    const user: User = {name: user_name, role: "viewer", color: color, mute: false, mutedByOwner: false};
+
+    room?.users.push(user);
+
+    res.json({
+        success: true,
+        room: room,
+        current_user: user
     })
 
 })
