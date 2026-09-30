@@ -11,6 +11,7 @@ import { User } from '../interfaces/User';
 import { CreateResponse } from '../interfaces/CreateResponse';
 import { Router } from '@angular/router';
 import { SocketService } from '../socket_service';
+import { channel } from 'diagnostics_channel';
 
 @Component({
   selector: 'app-room',
@@ -66,6 +67,15 @@ export class Room {
       console.log(message);
       this.cdr.detectChanges();
     })
+
+    this.socket.on("userMuteChange", (user_name: string) => {
+      const ChangeUser = this.users.find( u => u.name === user_name);
+
+      if(ChangeUser){
+        ChangeUser.mute = ! ChangeUser.mute;
+        this.cdr.detectChanges();
+      }
+    })
   }
 
   copie() {
@@ -120,15 +130,21 @@ export class Room {
     input.value = '';
 
     this.socket.emit("sendMessage", {
-      message: message,
-      key: this.key
+      key: this.key,
+      message: message
     });
   }
 
   toggleMute(user: User) {
-    if (user === this.current_user) {
-        user.mute = !user.mute;
+    if (! (user.name === this.current_user.name)) {
+      return;
     }
+    
+
+    this.socket.emit("toggleMute", { 
+      key: this.key,
+      user_name: this.current_user.name,
+    })
   }
 
   ShowSettings(user: User){

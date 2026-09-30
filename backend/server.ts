@@ -153,6 +153,13 @@ io.on("connection", (socket) => {
     socket.on("sendMessage", ({ key, message }) => {
         io.to(key).emit("newMessage", message);
     });
+    socket.on("toggleMute", ( { key, user_name}) => {
+        const user = rooms.get(key)?.users.find( u => u.name === user_name);
+        if(user) {
+            user.mute = ! user.mute;
+        }
+        io.to(key).emit("userMuteChange", user_name);
+    })
 
 })
 
