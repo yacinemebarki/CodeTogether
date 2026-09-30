@@ -31,7 +31,7 @@ export class Room {
   code = '';
   RunMessage = '2/3 passed'
   stats: TestStats = {RunTime: 0, memory: 0};
-  current_user: User = { name: '', role: '', color: '', mute: false, mutedByOwner: false};
+  current_user: User = { name: '', role: '', color: '', mute: false, mutedByOwner: false, socketId: ''};
   selectedMember: User | null = null;
   showRoles = false;
 
@@ -54,11 +54,13 @@ export class Room {
     })
 
     this.socket.emit("joinRoom", {
-      key: this.key
+      key: this.key,
+      user_name: this.current_user.name
     })
 
     this.socket.on("roomUpdated", (users: User[]) => {
       this.users = users;
+      console.log(users);
       this.cdr.detectChanges();
     })
 

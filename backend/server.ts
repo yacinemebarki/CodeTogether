@@ -75,7 +75,7 @@ app.post("/api/createRoom", (req, res) => {
     }while(rooms.has(key))
 
     const color = generateRandomColor();    
-    const user: User = {name: user_name, role: "owner", color: color, mute: false, mutedByOwner: false};
+    const user: User = {name: user_name, role: "owner", color: color, mute: false, mutedByOwner: false, socketId: ''};
 
     const users: User[] = [];
     users.push(user);
@@ -122,7 +122,7 @@ app.post("/api/joinRoom", (req, res) => {
         color = generateRandomColor();
     } while (room?.users.some(user => user.color === color));
 
-    const user: User = {name: user_name, role: "viewer", color: color, mute: false, mutedByOwner: false};
+    const user: User = {name: user_name, role: "viewer", color: color, mute: false, mutedByOwner: false, socketId: ''};
 
     room?.users.push(user);
 
@@ -135,19 +135,55 @@ app.post("/api/joinRoom", (req, res) => {
 })
 
 io.on("connection", (socket) => {
-    socket.on("joinRoom", ({ key }) => {
-        if(!rooms.has(key)){
+    socket.on("createRoom", ({ key, user_name }) => {
+        const room = rooms.get(key);
+        if(!room){
+            return;
+        }
+        const user = room.users.find(u => u.name === user_name);
+
+        if(!user){
             return;
         }
 
+        user.socketId = socket.id;
         socket.join(key);
 
+        io.to(key).emit("roomUpdated", room.users);
+    })
+    socket.on("joinRoom", ({ key, user_name }) => {
         const room = rooms.get(key);
+        if(!room){
+            return;
+        }
 
-        io.to(key).emit("roomUpdated", room?.users);
+        const user = room.users.find(u => u.name === user_name);
+
+        if (!user) {
+            return;
+        }
+
+        user.socketId = socket.id;
+
+        socket.join(key);
+
+
+
+        io.to(key).emit("roomUpdated", room.users);
     })
     socket.on("disconnect", () => {
-        console.log("user disconnected");
+        for(const [key, room] of rooms){
+            const user = room.users.find(u => u.socketId === socket.id);
+            if(!user){
+                continue;
+            }
+            room.users = room.users.filter( u => u.socketId !== socket.id);
+
+            io.to(key).emit("roomUpdated", room.users);
+            console.log(`${user.name} disconnected from ${key}`);   
+            break;
+        }
+
     });
 
     socket.on("sendMessage", ({ key, message }) => {

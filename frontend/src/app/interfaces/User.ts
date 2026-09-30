@@ -4,4 +4,5 @@ export interface User{
     color: string;
     mute: boolean;
     mutedByOwner: boolean;
+    socketId: string
 }
