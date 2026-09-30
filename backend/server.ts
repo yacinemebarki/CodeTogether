@@ -160,6 +160,9 @@ io.on("connection", (socket) => {
         }
         io.to(key).emit("userMuteChange", user_name);
     })
+    socket.on("choseProblem", ({ key, problem_id }) => {
+        io.to(key).emit("selectProblem", problem_id);
+    })
 
 })
 

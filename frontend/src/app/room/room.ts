@@ -76,6 +76,15 @@ export class Room {
         this.cdr.detectChanges();
       }
     })
+
+    this.socket.on("selectProblem", (problem_id: number) => {
+      const problem = this.problems.find( pro => pro.id === problem_id);
+      console.log(problem);
+      if(problem){
+        this.SelectedProblem = problem;
+        this.cdr.detectChanges();
+      }   
+    })
   }
 
   copie() {
@@ -99,8 +108,16 @@ export class Room {
   }
 
   SelectProblem(problem: Problem){
-    this.SelectedProblem = problem;
+    if(this.current_user.role != "owner"){
+      alert("only admin can chose problem");
+      return;
+    }
     this.ActiveProblemTab = "description";
+    this.SelectedProblem = problem;
+    this.socket.emit("choseProblem", {
+      key: this.key,
+      problem_id: this.SelectedProblem.id
+    });
     this.cdr.markForCheck();
   }
 
