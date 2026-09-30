@@ -60,6 +60,7 @@ export class LandingPage {
     this.http.post<CreateResponse>(`${API_BASE}/api/joinRoom`, JoinData).subscribe(response => {
       if(!response.success){
         alert(response.message);
+        return;
       }
       this.route.navigate(['/Room'], {
         state: {

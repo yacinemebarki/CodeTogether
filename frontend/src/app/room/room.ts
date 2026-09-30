@@ -60,6 +60,12 @@ export class Room {
       this.users = users;
       this.cdr.detectChanges();
     })
+
+    this.socket.on("newMessage", (message: Message) => {
+      this.messages.push(message);
+      console.log(message);
+      this.cdr.detectChanges();
+    })
   }
 
   copie() {
@@ -113,11 +119,10 @@ export class Room {
     const message: Message = {message: text, user: this.current_user};
     input.value = '';
 
-    this.http.post<CreateResponse>(`${API_BASE}/api/message_sent`, message).subscribe({ next: response => {
-      if(!response.success){
-        console.log(response.message);
-      }
-    }}) 
+    this.socket.emit("sendMessage", {
+      message: message,
+      key: this.key
+    });
   }
 
   toggleMute(user: User) {

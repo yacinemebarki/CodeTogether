@@ -150,5 +150,9 @@ io.on("connection", (socket) => {
         console.log("user disconnected");
     });
 
+    socket.on("sendMessage", ({ key, message }) => {
+        io.to(key).emit("newMessage", message);
+    });
+
 })
 
