@@ -10,6 +10,7 @@ import { TestStats } from '../interfaces/TestStats';
 import { User } from '../interfaces/User';
 import { CreateResponse } from '../interfaces/CreateResponse';
 import { Router } from '@angular/router';
+import { SocketService } from '../socket_service';
 
 @Component({
   selector: 'app-room',
@@ -36,29 +37,28 @@ export class Room {
   users: User[] = [];
 
   messages: Message[] = [];
-  constructor(private cdr: ChangeDetectorRef, private http: HttpClient, private route: Router) { }
-
-  ngOnInit() {
-    const navigation = this.route.getCurrentNavigation();
-    if(navigation){
-      console.log("navigation:", navigation);
-    }
-    else{
-      console.log("navigation empty")
-    }
-    console.log("stats:", navigation?.extras.state);
+  constructor(private cdr: ChangeDetectorRef, private http: HttpClient, private route: Router, private socket: SocketService) {
+    const navigation = this.route.getCurrentNavigation();    
     const room = navigation?.extras.state?.['room'];
     const current_user = navigation?.extras.state?.['current_user'];
-    console.log("room:", room);
-    console.log("current_user:", current_user);
-
     this.current_user = current_user;
     this.key = room.key;
     this.users = room.users;
+   }
 
+  ngOnInit() {
     this.http.get<Problem[]>(`${API_BASE}/api/problems`).subscribe(ProblemData => {
       this.problems = ProblemData;
       this.SelectedProblem = this.problems[0];
+    })
+
+    this.socket.emit("joinRoom", {
+      key: this.key
+    })
+
+    this.socket.on("roomUpdated", (users: User[]) => {
+      this.users = users;
+      this.cdr.detectChanges();
     })
   }
 

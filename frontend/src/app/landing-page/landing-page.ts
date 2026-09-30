@@ -61,6 +61,12 @@ export class LandingPage {
       if(!response.success){
         alert(response.message);
       }
+      this.route.navigate(['/Room'], {
+        state: {
+          room: response.room,
+          current_user: response.current_user
+        }
+      })    
     })
   }
   

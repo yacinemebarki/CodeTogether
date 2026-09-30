@@ -4,22 +4,24 @@ import path from 'path';
 import fs from 'fs';
 import { Room } from "./Room";
 import { User } from '../frontend/src/app/interfaces/User';
+import { Server } from "socket.io";
+import http from "http";
 
 const app = express();
 
-app.use(cors({
-    origin: 'http://localhost:4200'
-}));
+app.use(cors({ origin: "http://localhost:4200" }));
 app.use(express.json());
 
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:4200"
+    }
+});
+
 const PORT = 3000;
-
-app.listen(PORT, () =>{
-    console.log(`server is runni g ${PORT}`);
-})
-
-app.get("/", (req, res) =>{
-    res.send("CodeTogether api is running");
+server.listen(PORT, () => {
+    console.log(`server is running ${PORT}`);
 })
 
 const problems: any[] = [];
@@ -99,7 +101,7 @@ app.post("/api/joinRoom", (req, res) => {
     const { user_name, key } = req.body;
 
     if(!rooms.has(key)){
-        res.json({
+        return res.json({
             success: false,
             message: "room with that code dosnt exist"
         })
@@ -109,7 +111,7 @@ app.post("/api/joinRoom", (req, res) => {
     const UserExist = room?.users.some( user => user.name === user_name);
 
     if(UserExist){
-        res.json({
+        return res.json({
             success: false,
             message: "exist a user with that user name"
         })
@@ -124,11 +126,29 @@ app.post("/api/joinRoom", (req, res) => {
 
     room?.users.push(user);
 
-    res.json({
+    return res.json({
         success: true,
         room: room,
         current_user: user
     })
+
+})
+
+io.on("connection", (socket) => {
+    socket.on("joinRoom", ({ key }) => {
+        if(!rooms.has(key)){
+            return;
+        }
+
+        socket.join(key);
+
+        const room = rooms.get(key);
+
+        io.to(key).emit("roomUpdated", room?.users);
+    })
+    socket.on("disconnect", () => {
+        console.log("user disconnected");
+    });
 
 })
 
