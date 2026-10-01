@@ -60,13 +60,11 @@ export class Room {
 
     this.socket.on("roomUpdated", (users: User[]) => {
       this.users = users;
-      console.log(users);
       this.cdr.detectChanges();
     })
 
     this.socket.on("newMessage", (message: Message) => {
       this.messages.push(message);
-      console.log(message);
       this.cdr.detectChanges();
     })
 
@@ -86,6 +84,15 @@ export class Room {
         this.SelectedProblem = problem;
         this.cdr.detectChanges();
       }   
+    })
+
+    this.socket.on("kicked", () => {
+      this.route.navigate(['/']);
+      alert("You have been kicked from the room.");
+    })
+    this.socket.on("kickedUser", ({ user_name }) => {
+      this.users = this.users.filter( user => user.name !== user_name);     
+      this.cdr.detectChanges();
     })
   }
 
@@ -176,7 +183,10 @@ export class Room {
   }
 
   KickMember(SelectedMember: User){
-
+    this.socket.emit("kickUser", {
+      key: this.key,
+      user_name: SelectedMember.name
+    })
   }
 
   ChangeRole(SelectedMember: User, role: string){

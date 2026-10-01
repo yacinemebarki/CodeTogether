@@ -108,6 +108,16 @@ app.post("/api/joinRoom", (req, res) => {
     }
 
     const room = rooms.get(key);
+    if(!room){
+        return;
+    }
+
+    if(room?.users.length <= 0){
+        return res.json({
+            success: false,
+            message: "this room dosnt exist anymore you need to create a new one"
+        })
+    }
     const UserExist = room?.users.some( user => user.name === user_name);
 
     if(UserExist){
@@ -199,6 +209,24 @@ io.on("connection", (socket) => {
     socket.on("choseProblem", ({ key, problem_id }) => {
         io.to(key).emit("selectProblem", problem_id);
     })
+    socket.on("kickUser", ({ key, user_name }) => {
+        const room = rooms.get(key);
+        console.log(room);
+        if(!room){
+            return;
+        }
 
+        const kickedUser = room.users.find( u => u.name === user_name );
+        console.log("kickedUser", kickedUser);
+        if(!kickedUser){
+            return;
+        }
+
+        io.to(kickedUser.socketId).emit("kicked");
+
+        room.users = room.users.filter(u => u.name !== user_name);
+
+        io.to(key).emit("kickedUser", { user_name });
+    })
 })
 
