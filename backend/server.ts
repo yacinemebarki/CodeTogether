@@ -238,5 +238,19 @@ io.on("connection", (socket) => {
 
         io.to(key).emit("kickedUser", { user_name });
     })
+    socket.on("changeRole", ({ key, user_name, role}) => {
+        const room = rooms.get(key);
+        if(!room){
+            return;
+        }
+        const targetUser = room.users.find( user => user.name === user_name);
+        if(!targetUser){
+            return;
+        }
+
+        targetUser.role = role;
+
+        io.to(key).emit("roleChanged", { user_name, role});
+    })
 })
 

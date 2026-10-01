@@ -106,6 +106,14 @@ export class Room {
       this.users = this.users.filter( user => user.name !== user_name);     
       this.cdr.detectChanges();
     })
+    this.socket.on("roleChanged", (data: { user_name: string, role: string }) => {
+      const targetUser = this.users.find(user => user.name === data.user_name);
+      if(!targetUser){
+        return;
+      }
+      targetUser.role = data.role;
+      this.cdr.detectChanges();
+    })
   }
 
   copie() {
@@ -229,7 +237,11 @@ export class Room {
   }
 
   ChangeRole(SelectedMember: User, role: string){
-    SelectedMember.role = role;
+    this.socket.emit("changeRole", {
+      key: this.key,
+      user_name: SelectedMember.name,
+      role: role
+    })
   }
 
   CloseSettings(){
