@@ -60,6 +60,12 @@ export class Room {
 
     this.socket.on("roomUpdated", (users: User[]) => {
       this.users = users;
+      const updatedUser = users.find(u => u.name === this.current_user.name);
+
+      if (updatedUser) {
+        this.current_user = updatedUser;
+      }
+
       this.cdr.detectChanges();
     })
 
@@ -68,11 +74,17 @@ export class Room {
       this.cdr.detectChanges();
     })
 
-    this.socket.on("userMuteChange", (user_name: string) => {
-      const ChangeUser = this.users.find( u => u.name === user_name);
+    this.socket.on("userMuteChange", (data: { user_name: string, MutedByOwner: boolean }) => {
+      const ChangeUser = this.users.find( u => u.name === data.user_name);
 
       if(ChangeUser){
         ChangeUser.mute = ! ChangeUser.mute;
+        ChangeUser.mutedByOwner = data.MutedByOwner;
+        this.cdr.detectChanges();
+      }
+      if(ChangeUser?.name === this.current_user.name){
+        this.current_user.mute = ChangeUser.mute;
+        this.current_user.mutedByOwner = data.MutedByOwner;
         this.cdr.detectChanges();
       }
     })
@@ -165,11 +177,16 @@ export class Room {
     if (! (user.name === this.current_user.name)) {
       return;
     }
+    if(this.current_user.mutedByOwner && this.current_user.role !== "owner"){
+      alert("the owner of this room mute you");
+      return;
+    }
     
 
     this.socket.emit("toggleMute", { 
       key: this.key,
       user_name: this.current_user.name,
+      MutedByOwner: this.current_user.mutedByOwner
     })
   }
 
@@ -178,9 +195,31 @@ export class Room {
     this.showRoles = false;
   }
 
-  MuteMember(SelectedMember: User){
+  MuteMember(SelectedMember: User) {
+    const MuteBtn = document.querySelector('.MuteBtn') as HTMLElement | null;
+    if (!MuteBtn) {
+        return;
+    }
 
-  }
+    let mutedByOwner: boolean;
+    if (SelectedMember.mute === false) {
+        MuteBtn.textContent = "Unmute";
+        mutedByOwner = true;
+
+    } else {
+        if (!SelectedMember.mutedByOwner) {
+            alert("The user muted himself");
+            return;
+        }
+        MuteBtn.textContent = "Mute";
+        mutedByOwner = false;
+    }
+    this.socket.emit("toggleMute", {
+        key: this.key,
+        user_name: SelectedMember.name,
+        MutedByOwner: mutedByOwner
+    });
+}
 
   KickMember(SelectedMember: User){
     this.socket.emit("kickUser", {

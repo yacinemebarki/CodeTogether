@@ -187,7 +187,7 @@
             <div class="member-settings" *ngIf="selectedMember">
 
                 <button (click)="KickMember(selectedMember)">Kick</button>
-                <button (click)="MuteMember(selectedMember)">Mute</button>
+                <button (click)="MuteMember(selectedMember)" class="MuteBtn">Mute</button>
                 <button (click)="showRoles = !showRoles; $event.stopPropagation()">Change role</button>
                 <div class="role-options" *ngIf="showRoles">
                     <button (click)="ChangeRole(selectedMember, 'viewer')">Viewer</button>

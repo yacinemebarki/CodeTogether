@@ -190,7 +190,16 @@ io.on("connection", (socket) => {
             room.users = room.users.filter( u => u.socketId !== socket.id);
 
             io.to(key).emit("roomUpdated", room.users);
-            console.log(`${user.name} disconnected from ${key}`);   
+            console.log(`${user.name} disconnected from ${key}`); 
+            if(room.users.length <= 0){
+                rooms.delete(key);
+                console.log(`Room ${key} deleted`);
+                return;
+            }  
+            if(user.role === "owner"){
+                room.users[0].role = "owner";   
+            }
+            io.to(key).emit("roomUpdated", room.users);
             break;
         }
 
@@ -199,12 +208,13 @@ io.on("connection", (socket) => {
     socket.on("sendMessage", ({ key, message }) => {
         io.to(key).emit("newMessage", message);
     });
-    socket.on("toggleMute", ( { key, user_name}) => {
+    socket.on("toggleMute", ( { key, user_name, MutedByOwner }) => {
         const user = rooms.get(key)?.users.find( u => u.name === user_name);
         if(user) {
             user.mute = ! user.mute;
+            user.mutedByOwner = MutedByOwner;
         }
-        io.to(key).emit("userMuteChange", user_name);
+        io.to(key).emit("userMuteChange", { user_name, MutedByOwner });
     })
     socket.on("choseProblem", ({ key, problem_id }) => {
         io.to(key).emit("selectProblem", problem_id);
