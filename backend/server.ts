@@ -252,5 +252,15 @@ io.on("connection", (socket) => {
 
         io.to(key).emit("roleChanged", { user_name, role});
     })
+    socket.on('webrtc-offer', ({ key, offer }) => {
+        socket.to(key).emit('webrtc-offer', offer);
+    })
+    socket.on('webrtc-answer', ({ key, answer }) => {
+        socket.to(key).emit('webrtc-answer', answer);
+    })
+    socket.on('ice-candidate', ({ key, candidate }) => {
+        console.log("candidate", candidate);
+        socket.to(key).emit('ice-candidate', candidate);
+    })
 })
 

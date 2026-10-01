@@ -17,6 +17,7 @@
     </button>
 </header>  
 <div class="main" (click)="CloseSettings()">
+    <audio id="remoteAudio" autoplay></audio>
     <div class="problem-panel">
         <div class="problem-bar">
             <button class="DesBtn" [class.active]="ActiveProblemTab === 'description'" (click)="ShowProblem()">description</button>

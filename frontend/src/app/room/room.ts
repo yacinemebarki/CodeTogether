@@ -1,5 +1,5 @@
 import { Message } from './../interfaces/Message';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Problem, TestCase } from '../interfaces/Problem';
@@ -12,6 +12,7 @@ import { CreateResponse } from '../interfaces/CreateResponse';
 import { Router } from '@angular/router';
 import { SocketService } from '../socket_service';
 import { channel } from 'diagnostics_channel';
+import { eventNames, off } from 'process';
 
 @Component({
   selector: 'app-room',
@@ -19,7 +20,7 @@ import { channel } from 'diagnostics_channel';
   templateUrl: './room.html',
   styleUrl: './room.css',
 })
-export class Room {
+export class Room{
   time: number = 0;
   key = '';
   isClicked = false;
@@ -34,7 +35,8 @@ export class Room {
   current_user: User = { name: '', role: '', color: '', mute: false, mutedByOwner: false, socketId: ''};
   selectedMember: User | null = null;
   showRoles = false;
-
+  private peer!: RTCPeerConnection;
+  private localStreem!: MediaStream;
   users: User[] = [];
 
   messages: Message[] = [];
@@ -47,11 +49,13 @@ export class Room {
     this.users = room.users;
    }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.http.get<Problem[]>(`${API_BASE}/api/problems`).subscribe(ProblemData => {
       this.problems = ProblemData;
       this.SelectedProblem = this.problems[0];
     })
+    await this.startVoice();
+    await this.createOffer();
 
     this.socket.emit("joinRoom", {
       key: this.key,
@@ -113,6 +117,22 @@ export class Room {
       }
       targetUser.role = data.role;
       this.cdr.detectChanges();
+    })
+    this.socket.on('webrtc-offer',async (offer) => {
+      await this.peer.setRemoteDescription(new RTCSessionDescription(offer));
+
+      const answer = await this.peer.createAnswer();
+
+      this.socket.emit('webrtc-answer', {
+        key: this.key,
+        answer: answer
+      })
+    })
+    this.socket.on('webrtc-answer', async (answer) => {
+      await this.peer.setRemoteDescription(new RTCSessionDescription(answer));
+    })
+    this.socket.on('ice-candidate', async (candidate) => {
+      await this.peer.addIceCandidate(new RTCIceCandidate(candidate));
     })
   }
 
@@ -247,6 +267,50 @@ export class Room {
   CloseSettings(){
     this.selectedMember = null;
     this.showRoles = false;
+  }
+
+  async startVoice(){
+    this.localStreem = await navigator.mediaDevices.getUserMedia({
+      audio: true
+    });
+
+    this.peer = new RTCPeerConnection();
+
+    this.localStreem.getTracks().forEach(track => {
+      this.peer.addTrack(track, this.localStreem);
+    });
+
+    this.peer.ontrack = (event) => {
+      console.log("REMOTE TRACK:", event.streams[0]);
+      const audio = document.getElementById('remoteAudio') as HTMLAudioElement;
+      audio.srcObject = event.streams[0];
+    };
+
+    this.peer.onicecandidate = (event) => {
+      if(event.candidate){
+        console.log("candidate", event.candidate);
+        this.socket.emit("ice-candidate", {
+          key: this.key,
+          candidate: {
+            candidate: event.candidate.candidate,
+            sdpMid: event.candidate.sdpMid,
+            sdpMLineIndex: event.candidate.sdpMLineIndex,
+            usernameFragment: event.candidate.usernameFragment
+          }
+        })
+      }
+    }
+  }
+
+  async createOffer(){
+    const offer = await this.peer.createOffer();
+
+    await this.peer.setLocalDescription(offer);
+
+    this.socket.emit('webrtc-offer', {
+      key: this.key,
+      offer: offer
+    })
   }
 
 }
