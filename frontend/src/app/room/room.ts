@@ -38,6 +38,7 @@ export class Room{
   private peer!: RTCPeerConnection;
   private localStreem!: MediaStream;
   users: User[] = [];
+  remoteAUdio = new Audio();
 
   messages: Message[] = [];
   constructor(private cdr: ChangeDetectorRef, private http: HttpClient, private route: Router, private socket: SocketService) {
@@ -283,7 +284,18 @@ export class Room{
     this.peer.ontrack = (event) => {
       console.log("REMOTE TRACK:", event.streams[0]);
       const audio = document.getElementById('remoteAudio') as HTMLAudioElement;
-      audio.srcObject = event.streams[0];
+      const remoteStream = event.streams[0];
+      this.remoteAUdio.srcObject = remoteStream;
+      this.remoteAUdio.autoplay = true;
+
+      this.remoteAUdio.play()
+        .then(() => {
+          console.log("Remote audio playing");
+        })
+        .catch(err => {
+          console.error("Audio playback failed:", err);
+        });
+
     };
 
     this.peer.onicecandidate = (event) => {
