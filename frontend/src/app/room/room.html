@@ -81,7 +81,7 @@
             </select>
         </div>
         <div class="coding-space">
-            <ngx-monaco-editor [(ngModel)]="code" [options]="editorOptions"></ngx-monaco-editor>
+            <ngx-monaco-editor [(ngModel)]="code" [options]="editorOptions" (onInit)="onEditorInit($event)"></ngx-monaco-editor>
             <div class="test">
                 <div class="test-bar">
                     <div class="test-title">

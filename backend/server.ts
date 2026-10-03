@@ -83,7 +83,8 @@ app.post("/api/createRoom", (req, res) => {
     const room: Room = {
         key: key,
         owner: user,
-        users: users
+        users: users,
+        code: ''
     };
 
 
@@ -177,9 +178,10 @@ io.on("connection", (socket) => {
 
         socket.join(key);
 
+        const code = room.code;
+        const users = room.users;
 
-
-        io.to(key).emit("roomUpdated", room.users);
+        io.to(key).emit("roomUpdated", { code, users });
     })
     socket.on("disconnect", () => {
         for(const [key, room] of rooms){
@@ -188,8 +190,9 @@ io.on("connection", (socket) => {
                 continue;
             }
             room.users = room.users.filter( u => u.socketId !== socket.id);
-
-            io.to(key).emit("roomUpdated", room.users);
+            const code = room.code;
+            let users = room.users;
+            io.to(key).emit("roomUpdated", { code , users});
             console.log(`${user.name} disconnected from ${key}`); 
             if(room.users.length <= 0){
                 rooms.delete(key);
@@ -199,7 +202,8 @@ io.on("connection", (socket) => {
             if(user.role === "owner"){
                 room.users[0].role = "owner";   
             }
-            io.to(key).emit("roomUpdated", room.users);
+            users = room.users;
+            io.to(key).emit("roomUpdated", { code, users});
             break;
         }
 
@@ -261,6 +265,14 @@ io.on("connection", (socket) => {
     socket.on('ice-candidate', ({ key, candidate }) => {
         console.log("candidate", candidate);
         socket.to(key).emit('ice-candidate', candidate);
+    })
+    socket.on("changeCode", ({ key, changes, code}) => {
+        const room = rooms.get(key);
+        if(!room){
+            return;
+        }
+        room.code = code;
+        socket.to(key).emit("codeChanged", { changes, code });
     })
 })
 

@@ -3,4 +3,5 @@ export interface Room{
     key: string;
     owner: User;
     users: User[];
+    code: string;
 }

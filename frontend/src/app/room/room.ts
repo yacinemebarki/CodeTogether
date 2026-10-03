@@ -38,7 +38,9 @@ export class Room{
   showRoles = false;
   private peer!: RTCPeerConnection;
   private localStreem!: MediaStream;
+  private applyingRemoteChanges = false;
   users: User[] = [];
+  editor: any;
   remoteAUdio = new Audio();
   editorOptions = {
     them: 'vs-dark',
@@ -53,6 +55,28 @@ export class Room{
       enabled: true
     }
   };
+  updateEditorPermission() {
+    this.editor.updateOptions({
+      readOnly: this.current_user.role === 'viewer'
+    });
+  }
+
+  onEditorInit(editor: any){
+    this.editor = editor;
+
+    this.updateEditorPermission();
+    editor.onDidChangeModelContent((event: any) => {
+      if (this.applyingRemoteChanges) {
+        return;
+      }
+
+      this.socket.emit("changeCode", {
+        key: this.key,
+        changes: event.changes,
+        code: editor.getValue()
+      });
+    })
+  }
 
   messages: Message[] = [];
   constructor(private cdr: ChangeDetectorRef, private http: HttpClient, private route: Router, private socket: SocketService) {
@@ -74,15 +98,17 @@ export class Room{
 
     this.socket.emit("joinRoom", {
       key: this.key,
-      user_name: this.current_user.name
+      user_name: this.current_user.name,
     })
 
-    this.socket.on("roomUpdated", (users: User[]) => {
-      this.users = users;
-      const updatedUser = users.find(u => u.name === this.current_user.name);
+    this.socket.on("roomUpdated", (data: {code: string, users: User[]}) => {
+      this.users = data.users;
+      const updatedUser = data.users.find(u => u.name === this.current_user.name);
+      this.code = data.code
 
       if (updatedUser) {
         this.current_user = updatedUser;
+        this.updateEditorPermission();
       }
 
       this.cdr.detectChanges();
@@ -131,6 +157,7 @@ export class Room{
         return;
       }
       targetUser.role = data.role;
+      this.updateEditorPermission();
       this.cdr.detectChanges();
     })
     this.socket.on('webrtc-offer',async (offer) => {
@@ -149,6 +176,28 @@ export class Room{
     this.socket.on('ice-candidate', async (candidate) => {
       await this.peer.addIceCandidate(new RTCIceCandidate(candidate));
     })
+    this.socket.on("codeChanged", ({ changes, code }: { changes: any[]; code: string }) => {
+      if (!this.editor) {
+        this.code = code;
+        return;
+      }
+
+      this.applyingRemoteChanges = true;
+      try {
+        this.editor.executeEdits("remote-change", changes.map((change: any) => ({
+          range: change.range,
+          text: change.text
+        })));
+        if (this.editor.getValue() !== code) {
+          this.editor.setValue(code);
+        }
+      } finally {
+        this.applyingRemoteChanges = false;
+      }
+    })
+    this.socket.on("initialCode", ({ code }) => {
+      this.code = code;
+    });
   }
 
   copie() {
@@ -289,6 +338,10 @@ export class Room{
       audio: true
     });
 
+    if(this.current_user.mute === true){
+      this.localStreem.getAudioTracks()[0].enabled = false;
+    }
+
     this.peer = new RTCPeerConnection();
 
     this.localStreem.getTracks().forEach(track => {
@@ -299,10 +352,10 @@ export class Room{
       console.log("REMOTE TRACK:", event.streams[0]);
       const audio = document.getElementById('remoteAudio') as HTMLAudioElement;
       const remoteStream = event.streams[0];
-      this.remoteAUdio.srcObject = remoteStream;
-      this.remoteAUdio.autoplay = true;
+      audio.srcObject = remoteStream;
+      audio.autoplay = true;
 
-      this.remoteAUdio.play()
+      audio.play()
         .then(() => {
           console.log("Remote audio playing");
         })
