@@ -13,10 +13,11 @@ import { Router } from '@angular/router';
 import { SocketService } from '../socket_service';
 import { channel } from 'diagnostics_channel';
 import { eventNames, off } from 'process';
+import { EditorComponent } from 'ngx-monaco-editor-v2';
 
 @Component({
   selector: 'app-room',
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, EditorComponent],
   templateUrl: './room.html',
   styleUrl: './room.css',
 })
@@ -39,6 +40,19 @@ export class Room{
   private localStreem!: MediaStream;
   users: User[] = [];
   remoteAUdio = new Audio();
+  editorOptions = {
+    them: 'vs-dark',
+    language: this.selectedLanguage,
+    insertSpaces: true,
+    fontSize: 14,
+    tabSize: 4,
+    wordWarp: 'on',
+    scrollBeyondLastLine: false,
+    automaticLayou: true,
+    minimap: {
+      enabled: true
+    }
+  };
 
   messages: Message[] = [];
   constructor(private cdr: ChangeDetectorRef, private http: HttpClient, private route: Router, private socket: SocketService) {

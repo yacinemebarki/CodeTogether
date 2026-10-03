@@ -3,5 +3,9 @@
     "frontend": "cd frontend && ng serve",
     "backend": "cd backend && npm run dev",
     "dev": "concurrently \"npm run backend\" \"npm run frontend\""
+  },
+  "dependencies": {
+    "monaco-editor": "^0.56.0",
+    "ngx-monaco-editor-v2": "^22.0.5"
   }
 }

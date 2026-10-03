@@ -81,7 +81,7 @@
             </select>
         </div>
         <div class="coding-space">
-            <textarea [(ngModel)]="code" class="code-editor"></textarea> 
+            <ngx-monaco-editor [(ngModel)]="code" [options]="editorOptions"></ngx-monaco-editor>
             <div class="test">
                 <div class="test-bar">
                     <div class="test-title">
