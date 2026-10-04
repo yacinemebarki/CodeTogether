@@ -4,6 +4,7 @@
   "category": "arrays",
   "difficulty": "easy",
   "description": "Given an array of integers, find the length of the longest contiguous strictly increasing sequence.",
+  "functionName": "LongestIncreasing",
   "constraints": [
     "1 <= n <= 100000",
     "-1000000000 <= arr[i] <= 1000000000"
@@ -29,5 +30,13 @@
       "input": [1, 2, 2, 3, 4, 1, 2],
       "expected_output": 3
     }
-  ]
+  ],
+  "starterCode": {
+    "python": "def LongestIncreasing(nums):\n    pass",
+    "javascript": "function LongestIncreasing(nums) {\n    \n}",
+    "typescript": "function LongestIncreasing(nums: number[]): number {\n    \n}",
+    "cpp": "int LongestIncreasing(vector<int>& nums) {\n    \n}",
+    "c": "int LongestIncreasing(int* nums, int numsSize) {\n    \n}",
+    "java": "public int LongestIncreasing(int[] nums) {\n    \n}"
+  }
 }

@@ -12,10 +12,19 @@ export interface Problem {
     difficulty: string;
     description: string;
     constraints: string[];
-
+    function_name: string;
     input: {
         type: string;
         description: string;
+    };
+
+    starterCode: {
+        python: string;
+        javascript: string;
+        typescript: string;
+        cpp: string;
+        c: string;
+        java: string;
     };
 
     output: {
@@ -25,3 +34,5 @@ export interface Problem {
 
     test_cases: TestCase[];
 }
+
+export type Language =| 'python'| 'javascript'| 'typescript'| 'cpp'| 'c'| 'java';

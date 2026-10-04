@@ -62,7 +62,7 @@
     </div>
     <div class="coding-panel">
         <div class="coding-bar">
-            <select class="language-select" [(ngModel)]="selectedLanguage" name="language">
+            <select class="language-select" [(ngModel)]="selectedLanguage" (change)="updateCode()" name="language">
                 <option value="cpp">
                     C++
                 </option>

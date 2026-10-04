@@ -14,6 +14,7 @@ import { SocketService } from '../socket_service';
 import { channel } from 'diagnostics_channel';
 import { eventNames, off } from 'process';
 import { EditorComponent } from 'ngx-monaco-editor-v2';
+import { Language } from '../interfaces/Problem';
 
 @Component({
   selector: 'app-room',
@@ -25,13 +26,13 @@ export class Room{
   time: number = 0;
   key = '';
   isClicked = false;
-  selectedLanguage = 'cpp';
+  selectedLanguage: Language = 'cpp';
   ActiveProblemTab = 'problems';
   MemberTab = 'Chat';
   problems: Problem[] = [];
   SelectedProblem: Problem | null = null;
   code = '';
-  RunMessage = '2/3 passed'
+  RunMessage = 'you didnt run your code yet'
   stats: TestStats = {RunTime: 0, memory: 0};
   current_user: User = { name: '', role: '', color: '', mute: false, mutedByOwner: false, socketId: ''};
   selectedMember: User | null = null;
@@ -59,6 +60,18 @@ export class Room{
     this.editor.updateOptions({
       readOnly: this.current_user.role === 'viewer'
     });
+  }
+
+  updateCode(){
+    if(! this.SelectedProblem){
+      alert("you should choise problem");
+      return;
+    }
+    this.code = this.SelectedProblem.starterCode[this.selectedLanguage];
+    this.editorOptions = {
+      ...this.editorOptions,
+      language: this.selectedLanguage
+    };
   }
 
   onEditorInit(editor: any){
@@ -231,6 +244,7 @@ export class Room{
       key: this.key,
       problem_id: this.SelectedProblem.id
     });
+    this.updateCode();
     this.cdr.markForCheck();
   }
 
