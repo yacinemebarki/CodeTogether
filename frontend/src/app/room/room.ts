@@ -211,6 +211,18 @@ export class Room{
     this.socket.on("initialCode", ({ code }) => {
       this.code = code;
     });
+    this.socket.on("codeRunned", (Data: {language: Language, code: string}) => {
+      this.selectedLanguage = Data.language;
+      this.code = Data.code;
+      this.editor.updateOptions({
+        readOnly: true
+      })
+    })
+    this.socket.on("runResult", (result: string) => {
+      this.editor.updateOptions({
+        readOnly: this.current_user.role === 'viewer'
+      });
+    })
   }
 
   copie() {
@@ -259,7 +271,21 @@ export class Room{
   }
 
   RunCode(){
+    if(!this.SelectedProblem){
+      alert("you should chose first a problem");
+      return;
+    }
+    if(this.current_user.role === "viewer"){
+      alert("you cant run or submit code");
+      return;
+    }
 
+    this.socket.emit("runCode", {
+      key: this.key,
+      code: this.code,
+      langauge: this.selectedLanguage,
+      problemId: this.SelectedProblem.id
+    })
   }
 
   SubmitCode(){
