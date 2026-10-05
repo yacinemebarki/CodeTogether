@@ -1,4 +1,4 @@
-import { Language, Problem, RunResult } from './../frontend/src/app/interfaces/Problem';
+import { RunResult } from './../frontend/src/app/interfaces/Problem';
 import express from "express";
 import cors from 'cors';
 import path from 'path';
@@ -7,7 +7,7 @@ import { Room } from "./Room";
 import { User } from '../frontend/src/app/interfaces/User';
 import { Server } from "socket.io";
 import http from "http";
-import { runPython, runCpp, runC, runJava, runJavaScript, runTypeScript} from '../frontend/src/app/interfaces/Problem'
+import { runCode } from './execution/runCode';
 
 const app = express();
 
@@ -147,46 +147,6 @@ app.post("/api/joinRoom", (req, res) => {
 
 })
 
-async function runCode(code: string, language: Language, problemId: number): Promise<RunResult> {
-
-  const problem = problems.find(p => p.id === problemId);
-
-  if (!problem) {
-    return {
-      passed: false,
-      message: "Problem not found",
-      testResults: []
-    };
-  }
-
-  switch (language) {
-    case "python":
-      return await runPython(code, problem);
-
-    case "javascript":
-      return await runJavaScript(code, problem);
-
-    case "typescript":
-      return await runTypeScript(code, problem);
-
-    case "cpp":
-      return await runCpp(code, problem);
-
-    case "c":
-      return await runC(code, problem);
-
-    case "java":
-      return await runJava(code, problem);
-
-    default:
-      return {
-        passed: false,
-        message: "Unsupported language",
-        testResults: []
-      };
-  }
-}
-
 io.on("connection", (socket) => {
     socket.on("createRoom", ({ key, user_name }) => {
         const room = rooms.get(key);
@@ -325,7 +285,9 @@ io.on("connection", (socket) => {
 
         io.to(key).emit("codeRunned", ({ langauge, code}));
 
-        const result: RunResult = await RunCode(code, problemId, langauge);
+        console.log("code will be runned")
+        const result: RunResult = await runCode(code, problemId, langauge, problems);
+        console.log("result", result);
         io.to(key).emit("runResult", result);
     })
 })

@@ -50,22 +50,3 @@ export interface RunResult {
 }
 
 export type Language =| 'python'| 'javascript'| 'typescript'| 'cpp'| 'c'| 'java';
-
-export async function runPython(code: string, problem: Problem): Promise<RunResult>{
-
-}
-export async function runCpp(code: string, problem: Problem): Promise<RunResult>{
-    
-}
-export async function runC(code: string, problem: Problem): Promise<RunResult>{
-    
-}
-export async function runJava(code: string, problem: Problem): Promise<RunResult>{
-    
-}
-export async function runJavaScript(code: string, problem: Problem): Promise<RunResult>{
-    
-}
-export async function runTypeScript(code: string, problem: Problem): Promise<RunResult>{
-    
-}
