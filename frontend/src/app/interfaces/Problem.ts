@@ -37,16 +37,15 @@ export interface Problem {
 
 export interface RunResult {
   passed: boolean;
-  message: string;
-  testResults: {
-    passed: boolean;
+  stdout: string;
+  timeMs: number;
+
+  cases: {
+    input: any[];
     expected: any;
     actual: any;
+    passed: boolean;
   }[];
-  stats?: {
-    runTime: number;
-    memory: number;
-  };
 }
 
 export type Language =| 'python'| 'javascript'| 'typescript'| 'cpp'| 'c'| 'java';

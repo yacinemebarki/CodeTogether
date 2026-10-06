@@ -15,8 +15,10 @@ export async function runCode(code: string, language: Language, problemId: numbe
   if (!problem) {
     return {
       passed: false,
-      message: 'Problem not found',
-      testResults: []
+      stdout: "problem not found",
+      cases: [],
+      stdout: '',
+      timeMs: 0
     };
   }
 
@@ -36,8 +38,9 @@ export async function runCode(code: string, language: Language, problemId: numbe
     default:
       return {
         passed: false,
-        message: 'Unsupported language',
-        testResults: []
+        cases: [],
+        stdout: 'unsuported langauge',
+        timeMs: 0
       };
   }
 }

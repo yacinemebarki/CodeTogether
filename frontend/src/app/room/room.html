@@ -78,6 +78,9 @@
                 <option value="javascript">
                     JavaScript
                 </option>
+                <option value="typescript">
+                    typescript
+                </option>
             </select>
         </div>
         <div class="coding-space">
@@ -116,7 +119,7 @@
                     <div *ngFor="let test of SelectedProblem?.test_cases; let i = index" class="test-case-title test-case-title-{{ i + 1 }}">
                         <h1>Test {{ i + 1 }}</h1>
 
-                        <div class="test-result-case" *ngIf="test.user_output === undefined">
+                        <div class="test-result-case" *ngIf="test.user_output !== undefined">
                             <h5 class="expected">
                                 Expected output: {{ test.expected_output }}
                             </h5>

@@ -2,7 +2,7 @@ import { Message } from './../interfaces/Message';
 import { Component, OnInit } from '@angular/core';
 import { ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Problem, TestCase } from '../interfaces/Problem';
+import { Problem, RunResult, TestCase } from '../interfaces/Problem';
 import { HttpClient } from '@angular/common/http';
 import { API_BASE } from '../config';
 import { CommonModule } from '@angular/common';
@@ -218,11 +218,31 @@ export class Room{
         readOnly: true
       })
     })
-    this.socket.on("runResult", (result: string) => {
+    this.socket.on("runResult", (result: RunResult) => {
+      console.log("the result", result);
       this.editor.updateOptions({
         readOnly: this.current_user.role === 'viewer'
       });
-    })
+
+      this.RunMessage = result.stdout;
+      if (result.timeMs !== undefined) {
+        this.stats.RunTime = result.timeMs;
+      }
+
+      if (this.SelectedProblem?.test_cases && result.cases) {
+
+        this.SelectedProblem.test_cases.forEach((test: any, i: number) => {
+          const testResult = result.cases[i];
+
+          if (testResult) {
+            test.user_output = testResult.actual;
+            test.passed = testResult.passed;
+          }
+        });
+      }
+
+      this.cdr.detectChanges();
+    });
   }
 
   copie() {
