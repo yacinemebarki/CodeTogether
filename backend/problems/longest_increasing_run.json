@@ -4,7 +4,7 @@
   "category": "arrays",
   "difficulty": "easy",
   "description": "Given an array of integers, find the length of the longest contiguous strictly increasing sequence.",
-  "functionName": "LongestIncreasing",
+  "function_name": "LongestIncreasing",
   "constraints": [
     "1 <= n <= 100000",
     "-1000000000 <= arr[i] <= 1000000000"

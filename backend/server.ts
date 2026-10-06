@@ -285,8 +285,7 @@ io.on("connection", (socket) => {
 
         io.to(key).emit("codeRunned", ({ langauge, code}));
 
-        console.log("code will be runned")
-        const result: RunResult = await runCode(code, problemId, langauge, problems);
+        const result: RunResult = await runCode(code, langauge, problemId, problems);
         console.log("result", result);
         io.to(key).emit("runResult", result);
     })

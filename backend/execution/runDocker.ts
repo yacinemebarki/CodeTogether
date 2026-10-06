@@ -27,8 +27,8 @@ export function runPythonInDocker(code: string, timeoutMs = 5000): Promise<Docke
         let stdout = '';
         let stderr = '';
         let timedOut = false;
-        proc.stdout.on('date', (d) => (stdout += d));
-        proc.stderr.on('date', (d) => (stderr += d));
+        proc.stdout.on('data', (d) => (stdout += d));
+        proc.stderr.on('data', (d) => (stderr += d));
         
         const timer = setTimeout(() => {
             timedOut = true;

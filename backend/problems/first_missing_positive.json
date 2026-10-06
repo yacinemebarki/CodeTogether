@@ -4,7 +4,7 @@
   "category": "arrays",
   "difficulty": "medium",
   "description": "Given an array of integers, find the smallest positive integer that does not appear in the array.",
-  "functionName": "FirstMissing",
+  "function_name": "FirstMissing",
   "constraints": [
     "1 <= n <= 100000",
     "-1000000000 <= arr[i] <= 1000000000"

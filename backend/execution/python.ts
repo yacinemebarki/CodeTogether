@@ -5,7 +5,7 @@ import { runPythonInDocker } from './runDocker';
 const MARKER = '__RESULTS__';
 
 export async function runPython(code: string, problem: Problem): Promise<RunResult> {
-    const inputs = problem.test_cases.map((t: any) => t.input);
+    const inputs = problem.test_cases.map((t: any) => [t.input]);
 
     const script = [
         'import json',
@@ -34,7 +34,7 @@ export async function runPython(code: string, problem: Problem): Promise<RunResu
 
     const results = JSON.parse(line.slice(MARKER.length));
     const cases = results.map((r: any, i: number) => {
-        const expected = (problem.test_cases[i] as any).expected;
+        const expected = (problem.test_cases[i] as any).expected_output;
         return {
             input: inputs[i],
             expected,

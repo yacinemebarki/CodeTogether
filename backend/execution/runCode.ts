@@ -1,3 +1,4 @@
+import { constrainedMemory } from 'process';
 import { Language, Problem, RunResult } from '../../frontend/src/app/interfaces/Problem';
 import { runC } from './c';
 import { runCpp } from './cpp';
