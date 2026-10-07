@@ -32,15 +32,15 @@ function runCommand(command: string, args: string[], timeoutMs = 5000): Promise<
 
 export async function runC(code: string, problem: Problem): Promise<RunResult> {
     const inputs = problem.test_cases.map((t: any) => t.input);
-    const cases = inputs.map((input: any, i: number) => {
+    const cases = inputs.map((input: any) => {
         const arr = Array.isArray(input) ? input : [input];
-        const literal = arr.map((v: any) => (typeof v === 'number' ? String(v) : JSON.stringify(v))).join(', ');
+        const literal = arr.length ? arr.map((v: any) => String(v)).join(', ') : '0';
         return `
-            { 
-              int __arr[] = { ${literal} };
-              int __len = ${arr.length};
-              int __value = ${problem.function_name}(__arr, __len);
-              __results.push({ ok: true, value: __value });
+            {
+                int __arr[] = { ${literal} };
+                int __len = ${arr.length};
+                int __value = ${problem.function_name}(__arr, __len);
+                printf("%s{\\"ok\\":true,\\"value\\":%d}", __count++ ? "," : "", __value);
             }
         `;
     }).join('\n');
@@ -51,12 +51,10 @@ export async function runC(code: string, problem: Problem): Promise<RunResult> {
         #include <string.h>
         ${code}
         int main() {
-            printf("${MARKER}");
-            printf("[");
             int __count = 0;
-            const char *sep = "";
+            printf("\\n${MARKER}[");
             ${cases}
-            printf("]");
+            printf("]\\n");
             return 0;
         }
     `;

@@ -72,6 +72,10 @@ export class Room{
       ...this.editorOptions,
       language: this.selectedLanguage
     };
+    this.socket.emit("languageChanged", {
+      key: this.key,
+      language: this.selectedLanguage
+    });
   }
 
   onEditorInit(editor: any){
@@ -244,6 +248,18 @@ export class Room{
       this.cdr.detectChanges();
       
     });
+    this.socket.on("languageChanged", ( language: { language: Language }) => {
+      this.selectedLanguage = language.language;
+
+      if (this.SelectedProblem) {
+        this.code = this.SelectedProblem.starterCode[language.language];
+      }
+
+      this.editorOptions = {
+        ...this.editorOptions,
+        language: language.language
+      };
+    });
   }
 
   copie() {
@@ -301,6 +317,7 @@ export class Room{
       return;
     }
 
+    console.log(`role user ${this.current_user.role} the code sent ${this.code}`);
     this.socket.emit("runCode", {
       key: this.key,
       code: this.code,

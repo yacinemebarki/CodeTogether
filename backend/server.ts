@@ -8,6 +8,7 @@ import { User } from '../frontend/src/app/interfaces/User';
 import { Server } from "socket.io";
 import http from "http";
 import { runCode } from './execution/runCode';
+import { Language } from './../frontend/src/app/interfaces/Problem';
 
 const app = express();
 
@@ -283,11 +284,16 @@ io.on("connection", (socket) => {
         }
         room.code = code;
 
-        io.to(key).emit("codeRunned", ({ language, code}));
+        io.to(key).emit("codeRunned", ({ language, code }));
 
         const result: RunResult = await runCode(code, language, problemId, problems);
         console.log("result", result);
         io.to(key).emit("runResult", result);
     })
+    socket.on("languageChanged",({ key, language }: { key: string; language: Language }) => {
+        const room = rooms.get(key);
+        if (!room) return;
+        io.to(key).emit("languageChanged", { language });
+    });
 })
 

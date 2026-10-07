@@ -32,28 +32,44 @@ function runCommand(command: string, args: string[], timeoutMs = 5000): Promise<
 
 export async function runCpp(code: string, problem: Problem): Promise<RunResult> {
     const inputs = problem.test_cases.map((t: any) => t.input);
-    const cases = inputs.map((input: any, i: number) => {
+    const cases = inputs.map((input: any) => {
         const arr = Array.isArray(input) ? input : [input];
-        const literal = arr.map((v: any) => (typeof v === 'number' ? String(v) : JSON.stringify(v))).join(', ');
+        const literal = arr.map((v: any) => String(v)).join(', ');
         return `
-            {
-              std::vector<int> __arr = { ${literal} };
-              auto __value = ${problem.function_name}(__arr);
-              __results.push_back({"ok": true, "value": __value});
+            try {
+                std::vector<int> __arr = { ${literal} };
+                auto __value = ${problem.function_name}(__arr);
+                __results.push_back(R"({"ok":true,"value":)" + __json(__value) + "}");
+            } catch (const std::exception& e) {
+                __results.push_back(R"({"ok":false,"error":")" + std::string(e.what()) + "\\"}");
+            } catch (...) {
+                __results.push_back(R"({"ok":false,"error":"unknown error"})");
             }
         `;
     }).join('\n');
 
     const source = `
-        #include <iostream>
-        #include <vector>
-        #include <string>
-        #include <sstream>
+        #include <bits/stdc++.h>
+        using namespace std;
+
+        inline std::string __json(bool v) { return v ? "true" : "false"; }
+        inline std::string __json(const std::string& s) { return "\\"" + s + "\\""; }
+        template <typename T>
+        typename std::enable_if<std::is_arithmetic<T>::value, std::string>::type
+        __json(const T& v) { std::ostringstream o; o << v; return o.str(); }
+        template <typename T>
+        std::string __json(const std::vector<T>& v) {
+            std::string s = "[";
+            for (size_t i = 0; i < v.size(); ++i) { if (i) s += ","; s += __json(v[i]); }
+            return s + "]";
+        }
+
         ${code}
+
         int main() {
             std::vector<std::string> __results;
             ${cases}
-            std::cout << "${MARKER}" << "[";
+            std::cout << "\\n${MARKER}[";
             for (size_t i = 0; i < __results.size(); ++i) {
                 if (i > 0) std::cout << ",";
                 std::cout << __results[i];
