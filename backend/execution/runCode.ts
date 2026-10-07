@@ -17,7 +17,6 @@ export async function runCode(code: string, language: Language, problemId: numbe
       passed: false,
       stdout: "problem not found",
       cases: [],
-      stdout: '',
       timeMs: 0
     };
   }

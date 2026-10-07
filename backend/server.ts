@@ -276,16 +276,16 @@ io.on("connection", (socket) => {
         room.code = code;
         socket.to(key).emit("codeChanged", { changes, code });
     })
-    socket.on("runCode",async ({ key, code, langauge, problemId }) => {
+    socket.on("runCode",async ({ key, code, language, problemId }) => {
         const room = rooms.get(key);
         if(!room){
             return;
         }
         room.code = code;
 
-        io.to(key).emit("codeRunned", ({ langauge, code}));
+        io.to(key).emit("codeRunned", ({ language, code}));
 
-        const result: RunResult = await runCode(code, langauge, problemId, problems);
+        const result: RunResult = await runCode(code, language, problemId, problems);
         console.log("result", result);
         io.to(key).emit("runResult", result);
     })

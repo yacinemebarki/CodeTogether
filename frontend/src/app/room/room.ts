@@ -212,6 +212,7 @@ export class Room{
       this.code = code;
     });
     this.socket.on("codeRunned", (Data: {language: Language, code: string}) => {
+      console.log("the data sent in the codeRunned", Data);
       this.selectedLanguage = Data.language;
       this.code = Data.code;
       this.editor.updateOptions({
@@ -240,8 +241,8 @@ export class Room{
           }
         });
       }
-
       this.cdr.detectChanges();
+      
     });
   }
 
@@ -303,7 +304,7 @@ export class Room{
     this.socket.emit("runCode", {
       key: this.key,
       code: this.code,
-      langauge: this.selectedLanguage,
+      language: this.selectedLanguage,
       problemId: this.SelectedProblem.id
     })
   }
