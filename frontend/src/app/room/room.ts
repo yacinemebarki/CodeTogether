@@ -42,7 +42,7 @@ export class Room{
   private applyingRemoteChanges = false;
   users: User[] = [];
   editor: any;
-  remoteAUdio = new Audio();
+  remoteAUdio!: HTMLAudioElement;
   editorOptions = {
     them: 'vs-dark',
     language: this.selectedLanguage,
@@ -100,12 +100,21 @@ export class Room{
     const navigation = this.route.getCurrentNavigation();    
     const room = navigation?.extras.state?.['room'];
     const current_user = navigation?.extras.state?.['current_user'];
-    this.current_user = current_user;
-    this.key = room.key;
-    this.users = room.users;
-   }
-
+    if (room && current_user) {
+      this.current_user = current_user;
+      this.key = room.key;
+      this.users = room.users ?? [];
+    } else {
+      if (typeof window !== 'undefined') {
+        this.route.navigate(['/']);
+      }
+    }
+  }
   async ngOnInit() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    this.remoteAUdio = new Audio();
     this.http.get<Problem[]>(`${API_BASE}/api/problems`).subscribe(ProblemData => {
       this.problems = ProblemData;
       this.SelectedProblem = this.problems[0];
