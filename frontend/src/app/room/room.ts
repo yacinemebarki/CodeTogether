@@ -1,5 +1,5 @@
 import { Message } from './../interfaces/Message';
-import { Component, OnInit } from '@angular/core';
+import { afterNextRender, Component } from '@angular/core';
 import { ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Problem, RunResult, TestCase } from '../interfaces/Problem';
@@ -23,6 +23,7 @@ import { Language } from '../interfaces/Problem';
   styleUrl: './room.css',
 })
 export class Room{
+  editorReady = false;
   time: number = 0;
   key = '';
   isClicked = false;
@@ -97,6 +98,10 @@ export class Room{
 
   messages: Message[] = [];
   constructor(private cdr: ChangeDetectorRef, private http: HttpClient, private route: Router, private socket: SocketService) {
+    afterNextRender(() => {
+      this.editorReady = true;
+    });
+
     const navigation = this.route.getCurrentNavigation();    
     const room = navigation?.extras.state?.['room'];
     const current_user = navigation?.extras.state?.['current_user'];
