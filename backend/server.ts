@@ -12,13 +12,18 @@ import { Language } from './../frontend/src/app/interfaces/Problem';
 
 const app = express();
 
-app.use(cors({ origin: "http://localhost:4200" }));
+const allowedOrigins = [
+    "http://localhost:4200",
+    "https://code-together-lovat.vercel.app"
+];
+
+app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:4200"
+        origin: allowedOrigins
     }
 });
 
@@ -296,4 +301,3 @@ io.on("connection", (socket) => {
         io.to(key).emit("languageChanged", { language });
     });
 })
-
