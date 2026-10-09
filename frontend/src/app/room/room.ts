@@ -133,6 +133,7 @@ export class Room{
     })
 
     this.socket.on("roomUpdated", (data: {code: string, users: User[]}) => {
+      console.log("Updated users:", data.users);
       this.users = data.users;
       const updatedUser = data.users.find(u => u.name === this.current_user.name);
       this.code = data.code

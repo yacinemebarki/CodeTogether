@@ -168,7 +168,10 @@ io.on("connection", (socket) => {
         user.socketId = socket.id;
         socket.join(key);
 
-        io.to(key).emit("roomUpdated", room.users);
+        io.to(key).emit("roomUpdated", {
+            code: key,
+            users: room.users
+        });
     })
     socket.on("joinRoom", ({ key, user_name }) => {
         const room = rooms.get(key);
