@@ -9,6 +9,7 @@ import { Server } from "socket.io";
 import http from "http";
 import { runCode } from './execution/runCode';
 import { Language } from './../frontend/src/app/interfaces/Problem';
+import { captureRejectionSymbol } from 'events';
 
 const app = express();
 
@@ -142,7 +143,7 @@ app.post("/api/joinRoom", (req, res) => {
     } while (room?.users.some(user => user.color === color));
 
     const user: User = {name: user_name, role: "viewer", color: color, mute: false, mutedByOwner: false, socketId: ''};
-
+    console.log(`${user.name} join this room ${key}`);
     room?.users.push(user);
 
     return res.json({
