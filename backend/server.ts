@@ -186,10 +186,12 @@ io.on("connection", (socket) => {
 
         socket.join(key);
 
-        const code = room.code;
-        const users = room.users;
+       
 
-        io.to(key).emit("roomUpdated", { code, users });
+        io.to(key).emit("roomUpdated", { 
+            code: room.code,
+            users: room.users
+        });
     })
     socket.on("disconnect", () => {
         for(const [key, room] of rooms){
@@ -229,6 +231,7 @@ io.on("connection", (socket) => {
         io.to(key).emit("userMuteChange", { user_name, MutedByOwner });
     })
     socket.on("choseProblem", ({ key, problem_id }) => {
+        console.log("the porblem is in backend", problem_id);
         io.to(key).emit("selectProblem", problem_id);
     })
     socket.on("kickUser", ({ key, user_name }) => {
@@ -295,7 +298,7 @@ io.on("connection", (socket) => {
         console.log("result", result);
         io.to(key).emit("runResult", result);
     })
-    socket.on("languageChanged",({ key, language }: { key: string; language: Language }) => {
+    socket.on("changeLanguage",({ key, language }: { key: string; language: Language }) => {
         const room = rooms.get(key);
         if (!room) return;
         io.to(key).emit("languageChanged", { language });
