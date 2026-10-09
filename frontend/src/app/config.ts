@@ -1,1 +1,1 @@
-export const API_BASE = 'https://codetogether-sm2r.onrender.com/';
+export const API_BASE = 'https://codetogether-sm2r.onrender.com';
