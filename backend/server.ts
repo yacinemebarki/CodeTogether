@@ -292,6 +292,7 @@ io.on("connection", (socket) => {
         socket.to(key).emit("codeChanged", { changes, code });
     })
     socket.on("runCode",async ({ key, code, language, problemId }) => {
+        console.log("runCode event received", { key, language, problemId });
         const room = rooms.get(key);
         if(!room){
             return;
@@ -299,8 +300,9 @@ io.on("connection", (socket) => {
         room.code = code;
 
         io.to(key).emit("codeRunned", ({ language, code }));
-
+        console.log("other users are found");
         try {
+            console.log("code", code);
             const result: RunResult = await runCode(code, language, problemId, problems);
             console.log("result", result);
             io.to(key).emit("runResult", result);
