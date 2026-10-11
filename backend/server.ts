@@ -303,7 +303,7 @@ io.on("connection", (socket) => {
         console.log("result", result);
         io.to(key).emit("runResult", result);
     })
-    socket.on("languageChanged",({ key, language }: { key: string; language: Language }) => {
+    socket.on("changeLanguage",({ key, language }: { key: string; language: Language }) => {
         const room = rooms.get(key);
         if (!room) return;
         io.to(key).emit("languageChanged", { language });

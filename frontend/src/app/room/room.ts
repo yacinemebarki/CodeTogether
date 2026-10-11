@@ -263,7 +263,7 @@ export class Room{
       this.cdr.detectChanges();
       
     });
-    this.socket.on("changeLanguage", ( language: { language: Language }) => {
+    this.socket.on("languageChanged", ( language: { language: Language }) => {
       this.selectedLanguage = language.language;
 
       if (this.SelectedProblem) {
