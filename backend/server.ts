@@ -16,7 +16,7 @@ const app = express();
 const allowedOrigins = [
     "http://localhost:4200",
     "https://code-together-lovat.vercel.app",
-    "https://code-together-lmvzl4icv-yacinemebarkis-projects.vercel.app"
+    "code-together-gst0hr6sc-yacinemebarkis-projects.vercel.app"
 ];
 
 app.use(cors({ origin: allowedOrigins }));
