@@ -300,9 +300,14 @@ io.on("connection", (socket) => {
 
         io.to(key).emit("codeRunned", ({ language, code }));
 
-        const result: RunResult = await runCode(code, language, problemId, problems);
-        console.log("result", result);
-        io.to(key).emit("runResult", result);
+        try {
+            const result: RunResult = await runCode(code, language, problemId, problems);
+            console.log("result", result);
+            io.to(key).emit("runResult", result);
+        } catch (err: any) {
+            console.error("runCode failed:", err);
+            io.to(key).emit("runResult", { error: err?.message ?? "Execution failed" });
+        }
     })
     socket.on("changeLanguage",({ key, language }: { key: string; language: Language }) => {
         const room = rooms.get(key);
