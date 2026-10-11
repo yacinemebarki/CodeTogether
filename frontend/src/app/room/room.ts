@@ -73,7 +73,7 @@ export class Room{
       ...this.editorOptions,
       language: this.selectedLanguage
     };
-    this.socket.emit("languageChanged", {
+    this.socket.emit("changeLanguage", {
       key: this.key,
       language: this.selectedLanguage
     });
