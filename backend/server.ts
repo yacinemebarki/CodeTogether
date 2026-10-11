@@ -15,7 +15,8 @@ const app = express();
 
 const allowedOrigins = [
     "http://localhost:4200",
-    "https://code-together-lovat.vercel.app"
+    "https://code-together-lovat.vercel.app",
+    "https://code-together-lmvzl4icv-yacinemebarkis-projects.vercel.app"
 ];
 
 app.use(cors({ origin: allowedOrigins }));
@@ -302,7 +303,7 @@ io.on("connection", (socket) => {
         console.log("result", result);
         io.to(key).emit("runResult", result);
     })
-    socket.on("changeLanguage",({ key, language }: { key: string; language: Language }) => {
+    socket.on("languageChanged",({ key, language }: { key: string; language: Language }) => {
         const room = rooms.get(key);
         if (!room) return;
         io.to(key).emit("languageChanged", { language });
