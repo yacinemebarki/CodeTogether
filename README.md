@@ -138,8 +138,6 @@ Once added, the frontend will automatically read it from the backend API.
 ## Notes
 
 - The project is intentionally lightweight and JSON-driven for easy experimentation with problem content.
-- The app is best suited for local development and educational use rather than production deployment.
-- If you want to extend the platform, the primary integration points are the backend server, room event handlers, and the problem JSON definitions.
 - Code execution currently supports C only. Selecting another language will show a notice and will not send it to the backend runner.
 
 
