@@ -15,17 +15,17 @@ This is a full-stack TypeScript project with an Angular frontend and an Express 
 
 - Problem library with difficulty and category metadata
 - Problem detail pages with examples, constraints, and test cases
-- Starter code templates for multiple languages
+- Starter code templates for multiple languages (C is the only language that can be executed)
 - Room creation and joining via shareable room codes
 - Real-time code synchronization across users in the same room
 - Chat, user roles, mute/kick controls, and ownership management
-- Backend code execution against problem test cases
+- Backend C code execution against problem test cases
 
 ## Tech stack
 
 - Frontend: Angular 21, TypeScript, RxJS, Socket.IO client
 - Backend: Express, Socket.IO, TypeScript
-- Code execution: Node-based runners for JavaScript, TypeScript, Python, C++, C, and Java
+- Code execution: C runner (`backend/execution/c.ts`) against problem test cases
 - Problem definitions: JSON files under `backend/problems/`
 
 ## Project structure
@@ -140,5 +140,6 @@ Once added, the frontend will automatically read it from the backend API.
 - The project is intentionally lightweight and JSON-driven for easy experimentation with problem content.
 - The app is best suited for local development and educational use rather than production deployment.
 - If you want to extend the platform, the primary integration points are the backend server, room event handlers, and the problem JSON definitions.
+- Code execution currently supports C only. Selecting another language will show a notice and will not send it to the backend runner.
 
 

@@ -276,6 +276,15 @@ header{
     transform: translateY(4px);
 }
 
+.language-support-notice {
+    background-color: #5a3b15;
+    border: 1px solid #d97706;
+    border-radius: 2px;
+    color: #fbbf24;
+    margin-bottom: 8px;
+    padding: 10px;
+}
+
 .test-result{
     display: flex;
     flex-direction: row;
@@ -493,7 +502,7 @@ header{
     margin-left: auto;
 }
 
-.microphone, .setting-btn {
+.setting-btn {
     width: 30px;
     height: 30px;
     padding: 0;
@@ -505,24 +514,12 @@ header{
     justify-content: center;
     flex-shrink: 0;
 }
-.microphone svg, .setting-btn svg {
+.setting-btn svg {
     width: 18px;
     height: 18px;
 }
 
-.microphone {
-    color: #4ade80;
-}
-.microphone.muted {
-    color: #f87171;
-}
-
-.microphone:disabled {
-    opacity: 1;
-    cursor: default;
-}
-
-.microphone:not(:disabled):hover, .setting-btn:hover {
+.setting-btn:hover {
     background-color: #303641;
 }
 

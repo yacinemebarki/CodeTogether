@@ -17,7 +17,6 @@
     </button>
 </header>  
 <div class="main" (click)="CloseSettings()">
-    <audio id="remoteAudio" autoplay></audio>
     <div class="problem-panel">
         <div class="problem-bar">
             <button class="DesBtn" [class.active]="ActiveProblemTab === 'description'" (click)="ShowProblem()">description</button>
@@ -110,6 +109,9 @@
                         </button>
                     </div>
                 </div>
+                <div class="language-support-notice" *ngIf="languageSupportNotice">
+                    {{ languageSupportNotice }}
+                </div>
                 <div class="test-result">
                     <h3 class="run-message-{{ RunMessage }}">{{ RunMessage }}</h3>
                     <div class="test-stats">
@@ -172,17 +174,6 @@
                     <h1 class="member-role">{{ member.role }}</h1>
                 </div>
                 <div class="member-btns">
-                    <button class="microphone" [class.muted]="member.mute" [disabled]="member.name != current_user.name" (click)="toggleMute(member)">
-                        <svg *ngIf="member.mute === false" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 1 1 6 0v8.25a3 3 0 0 1-3 3Z" />
-                        </svg>
-
-
-                        <svg *ngIf="member.mute === true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 1 1 6 0v8.25a3 3 0 0 1-3 3Z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m4 4 16 16"/>
-                        </svg>
-                    </button>    
                     <button class="setting-btn" *ngIf="current_user.role === 'owner' && member.role != 'owner'" (click)="ShowSettings(member); $event.stopPropagation()">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
@@ -193,7 +184,6 @@
             <div class="member-settings" *ngIf="selectedMember">
 
                 <button (click)="KickMember(selectedMember)">Kick</button>
-                <button (click)="MuteMember(selectedMember)" class="MuteBtn">Mute</button>
                 <button (click)="showRoles = !showRoles; $event.stopPropagation()">Change role</button>
                 <div class="role-options" *ngIf="showRoles">
                     <button (click)="ChangeRole(selectedMember, 'viewer')">Viewer</button>

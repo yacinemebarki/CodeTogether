@@ -35,15 +35,13 @@ export class Room{
   code = '';
   RunMessage = 'you didnt run your code yet'
   stats: TestStats = {RunTime: 0, memory: 0};
-  current_user: User = { name: '', role: '', color: '', mute: false, mutedByOwner: false, socketId: ''};
+  languageSupportNotice = '';
+  current_user: User = { name: '', role: '', color: '', socketId: ''};
   selectedMember: User | null = null;
   showRoles = false;
-  private peer!: RTCPeerConnection;
-  private localStreem!: MediaStream;
   private applyingRemoteChanges = false;
   users: User[] = [];
   editor: any;
-  remoteAUdio!: HTMLAudioElement;
   editorOptions = {
     them: 'vs-dark',
     language: this.selectedLanguage,
@@ -64,6 +62,7 @@ export class Room{
   }
 
   updateCode(){
+    this.languageSupportNotice = '';
     if(! this.SelectedProblem){
       alert("you should choise problem");
       return;
@@ -119,14 +118,10 @@ export class Room{
     if (typeof window === 'undefined') {
       return;
     }
-    this.remoteAUdio = new Audio();
     this.http.get<Problem[]>(`${API_BASE}/api/problems`).subscribe(ProblemData => {
       this.problems = ProblemData;
       this.SelectedProblem = this.problems[0];
     })
-    await this.startVoice();
-    await this.createOffer();
-
     this.socket.emit("joinRoom", {
       key: this.key,
       user_name: this.current_user.name,
@@ -149,21 +144,6 @@ export class Room{
     this.socket.on("newMessage", (message: Message) => {
       this.messages.push(message);
       this.cdr.detectChanges();
-    })
-
-    this.socket.on("userMuteChange", (data: { user_name: string, MutedByOwner: boolean }) => {
-      const ChangeUser = this.users.find( u => u.name === data.user_name);
-
-      if(ChangeUser){
-        ChangeUser.mute = ! ChangeUser.mute;
-        ChangeUser.mutedByOwner = data.MutedByOwner;
-        this.cdr.detectChanges();
-      }
-      if(ChangeUser?.name === this.current_user.name){
-        this.current_user.mute = ChangeUser.mute;
-        this.current_user.mutedByOwner = data.MutedByOwner;
-        this.cdr.detectChanges();
-      }
     })
 
     this.socket.on("selectProblem", (problem_id: number) => {
@@ -191,22 +171,6 @@ export class Room{
       targetUser.role = data.role;
       this.updateEditorPermission();
       this.cdr.detectChanges();
-    })
-    this.socket.on('webrtc-offer',async (offer) => {
-      await this.peer.setRemoteDescription(new RTCSessionDescription(offer));
-
-      const answer = await this.peer.createAnswer();
-
-      this.socket.emit('webrtc-answer', {
-        key: this.key,
-        answer: answer
-      })
-    })
-    this.socket.on('webrtc-answer', async (answer) => {
-      await this.peer.setRemoteDescription(new RTCSessionDescription(answer));
-    })
-    this.socket.on('ice-candidate', async (candidate) => {
-      await this.peer.addIceCandidate(new RTCIceCandidate(candidate));
     })
     this.socket.on("codeChanged", ({ changes, code }: { changes: any[]; code: string }) => {
       if (!this.editor) {
@@ -323,6 +287,13 @@ export class Room{
   }
 
   RunCode(){
+    if (this.selectedLanguage !== 'c') {
+      this.languageSupportNotice = 'Only C code can be run in this project. Please select C and try again.';
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.languageSupportNotice = '';
     if(!this.SelectedProblem){
       alert("you should chose first a problem");
       return;
@@ -348,6 +319,9 @@ export class Room{
   SentMessage(){
     const input = document.querySelector('.message-field') as HTMLInputElement;
     const text = input.value;
+    if(text.trim() === "") {
+      return;
+    }
 
     const message: Message = {message: text, user: this.current_user};
     input.value = '';
@@ -358,53 +332,11 @@ export class Room{
     });
   }
 
-  toggleMute(user: User) {
-    if (! (user.name === this.current_user.name)) {
-      return;
-    }
-    if(this.current_user.mutedByOwner && this.current_user.role !== "owner"){
-      alert("the owner of this room mute you");
-      return;
-    }
-    
-
-    this.socket.emit("toggleMute", { 
-      key: this.key,
-      user_name: this.current_user.name,
-      MutedByOwner: this.current_user.mutedByOwner
-    })
-  }
-
   ShowSettings(user: User){
     this.selectedMember = user;
     this.showRoles = false;
   }
 
-  MuteMember(SelectedMember: User) {
-    const MuteBtn = document.querySelector('.MuteBtn') as HTMLElement | null;
-    if (!MuteBtn) {
-        return;
-    }
-
-    let mutedByOwner: boolean;
-    if (SelectedMember.mute === false) {
-        MuteBtn.textContent = "Unmute";
-        mutedByOwner = true;
-
-    } else {
-        if (!SelectedMember.mutedByOwner) {
-            alert("The user muted himself");
-            return;
-        }
-        MuteBtn.textContent = "Mute";
-        mutedByOwner = false;
-    }
-    this.socket.emit("toggleMute", {
-        key: this.key,
-        user_name: SelectedMember.name,
-        MutedByOwner: mutedByOwner
-    });
-}
 
   KickMember(SelectedMember: User){
     this.socket.emit("kickUser", {
@@ -426,63 +358,5 @@ export class Room{
     this.showRoles = false;
   }
 
-  async startVoice(){
-    this.localStreem = await navigator.mediaDevices.getUserMedia({
-      audio: true
-    });
-
-    if(this.current_user.mute === true){
-      this.localStreem.getAudioTracks()[0].enabled = false;
-    }
-
-    this.peer = new RTCPeerConnection();
-
-    this.localStreem.getTracks().forEach(track => {
-      this.peer.addTrack(track, this.localStreem);
-    });
-
-    this.peer.ontrack = (event) => {
-      console.log("REMOTE TRACK:", event.streams[0]);
-      const audio = document.getElementById('remoteAudio') as HTMLAudioElement;
-      const remoteStream = event.streams[0];
-      audio.srcObject = remoteStream;
-      audio.autoplay = true;
-
-      audio.play()
-        .then(() => {
-          console.log("Remote audio playing");
-        })
-        .catch(err => {
-          console.error("Audio playback failed:", err);
-        });
-
-    };
-
-    this.peer.onicecandidate = (event) => {
-      if(event.candidate){
-        console.log("candidate", event.candidate);
-        this.socket.emit("ice-candidate", {
-          key: this.key,
-          candidate: {
-            candidate: event.candidate.candidate,
-            sdpMid: event.candidate.sdpMid,
-            sdpMLineIndex: event.candidate.sdpMLineIndex,
-            usernameFragment: event.candidate.usernameFragment
-          }
-        })
-      }
-    }
-  }
-
-  async createOffer(){
-    const offer = await this.peer.createOffer();
-
-    await this.peer.setLocalDescription(offer);
-
-    this.socket.emit('webrtc-offer', {
-      key: this.key,
-      offer: offer
-    })
-  }
 
 }

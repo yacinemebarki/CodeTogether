@@ -86,7 +86,7 @@ app.post("/api/createRoom", (req, res) => {
     }while(rooms.has(key))
 
     const color = generateRandomColor();    
-    const user: User = {name: user_name, role: "owner", color: color, mute: false, mutedByOwner: false, socketId: ''};
+    const user: User = {name: user_name, role: "owner", color: color, socketId: ''};
 
     const users: User[] = [];
     users.push(user);
@@ -144,7 +144,7 @@ app.post("/api/joinRoom", (req, res) => {
         color = generateRandomColor();
     } while (room?.users.some(user => user.color === color));
 
-    const user: User = {name: user_name, role: "viewer", color: color, mute: false, mutedByOwner: false, socketId: ''};
+    const user: User = {name: user_name, role: "viewer", color: color, socketId: ''};
     console.log(`${user.name} join this room ${key}`);
     room?.users.push(user);
 
@@ -228,14 +228,6 @@ io.on("connection", (socket) => {
     socket.on("sendMessage", ({ key, message }) => {
         io.to(key).emit("newMessage", message);
     });
-    socket.on("toggleMute", ( { key, user_name, MutedByOwner }) => {
-        const user = rooms.get(key)?.users.find( u => u.name === user_name);
-        if(user) {
-            user.mute = ! user.mute;
-            user.mutedByOwner = MutedByOwner;
-        }
-        io.to(key).emit("userMuteChange", { user_name, MutedByOwner });
-    })
     socket.on("choseProblem", ({ key, problem_id }) => {
         console.log("the porblem is in backend", problem_id);
         io.to(key).emit("selectProblem", problem_id);
@@ -273,16 +265,6 @@ io.on("connection", (socket) => {
 
         io.to(key).emit("roleChanged", { user_name, role});
     })
-    socket.on('webrtc-offer', ({ key, offer }) => {
-        socket.to(key).emit('webrtc-offer', offer);
-    })
-    socket.on('webrtc-answer', ({ key, answer }) => {
-        socket.to(key).emit('webrtc-answer', answer);
-    })
-    socket.on('ice-candidate', ({ key, candidate }) => {
-        console.log("candidate", candidate);
-        socket.to(key).emit('ice-candidate', candidate);
-    })
     socket.on("changeCode", ({ key, changes, code}) => {
         const room = rooms.get(key);
         if(!room){
@@ -299,6 +281,11 @@ io.on("connection", (socket) => {
         }
         room.code = code;
 
+        if (language !== 'c') {
+            io.to(key).emit("runResult", { error: "Only C code can be run in this project. Please select C and try again." });
+            return;
+        }
+ 
         io.to(key).emit("codeRunned", ({ language, code }));
         console.log("other users are found");
         try {
